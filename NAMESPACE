@@ -2,6 +2,7 @@
 
 export(checkbox_labels)
 export(clean_REDCap)
+export(create_project)
 export(create_template)
 export(factor_convert)
 export(factor_table)
