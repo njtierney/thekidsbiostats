@@ -4,10 +4,16 @@
 \alias{create_template}
 \title{Create Template for Quarto}
 \usage{
-create_template(file_name = NULL, ext_name = "thekids-html")
+create_template(
+  file_name = NULL,
+  directory = "reports",
+  ext_name = "thekids-html"
+)
 }
 \arguments{
 \item{file_name}{A string. The name of the new Quarto markdown (.qmd) file. This must be provided.}
+
+\item{directory}{A string. The name of the directory to plate the files. Default is "reports"}
 
 \item{ext_name}{A string. The name of the extension to use for the HTML template.
 Defaults to "thekids-html". "thekids-word" is an alternative which used the Word template.}
@@ -25,7 +31,7 @@ a new Quarto markdown file based on the extension template.
 }
 \note{
 The function assumes that the package \code{thekidsbiostats} contains the necessary extension files
-under \verb{extdata/_extensions/}.
+under \verb{ext_qmd/_extensions/}.
 }
 \examples{
 \dontrun{
