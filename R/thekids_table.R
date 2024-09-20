@@ -101,6 +101,16 @@ thekids_table <- function(x,
       hline_top(part = "all") %>%
       hline_bottom() %>%
       autofit()
+  } else if(any(class(x) %in% c("gt_tbl"))){
+    x %>%
+      data.frame() %>%
+      flextable() %>%
+      fontsize(part = "header", size = font.size.header) %>%
+      color(color = "white", part = "header") %>%
+      color(color = "#111921", part = "body") %>%
+      hline_top(part = "all") %>%
+      hline_bottom() %>%
+      autofit()
   } else {
     x %>%
       flextable() %>%
