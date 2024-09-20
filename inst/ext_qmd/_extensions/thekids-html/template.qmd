@@ -6,16 +6,19 @@ author:
   affiliation:
   - "The Kids Research Institute Australia, Perth, WA, Australia"
 date: "`r format(Sys.time(), '%d %B %Y')`"
+title-block-banner: "#1F3B73"
 format:
-  docx:
-    reference-doc: thekids_quarto_template.docx
-    toc: false
-    toc-depth: 3
-    toc-title: Contents
-    number-sections: true
-    number-depth: 1
-    highlight-style: github
-    fig-dpi: 300
+  html:
+    embed-resources: true
+    code-fold: true
+    toc: true
+    toc-location: left
+    theme: journal
+    html-table-processing: none
+    self-contained: true
+reference-location: margin 
+citation-location: margin 
+css: _extensions/thekids-html/styles.css
 editor_options: 
   chunk_output_type: console
 execute:
@@ -24,8 +27,6 @@ execute:
   message: false
   error: true
 mainfont: Barlow
-fig-align: center
-fig-format: png
 ---
 
 ```{r init, include = F}
@@ -33,8 +34,8 @@ library(targets)
 library(jtools)
 library(biometrics)
 
-models <- tar_read(models)
-plots <- tar_read(plots)
+# models <- tar_read(models)
+# plots <- tar_read(plots)
 
 
 ```
@@ -62,7 +63,7 @@ Tables, explanatory plots, etc to examine the data prior to analysis.
 ### Linear Model
 
 ```{r echo = T}
-summ(models$model1)
+# summ(models$model1)
 ```
 
 ## Supplementary Material
@@ -70,7 +71,6 @@ summ(models$model1)
 ### Plots
 
 ```{r echo = F}
-plots$model1
+# plots$model1
 ```
-
 
