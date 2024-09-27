@@ -17,6 +17,13 @@ remotes::install_github("The-Kids-Biostats/thekidsbiostats")
 ```
 # Using the template
 
-There is another repository [https://github.com/The-Kids-Biostats/thekidsbiostats_template](https://github.com/The-Kids-Biostats/thekidsbiostats_template) that serves as our template repository for data workflows and reporting. It has a Quarto (`.qmd`) based templates for reporting in wither `.html` or word (`.docx`).
+To make use of our project structure templates for a new project, follow the following steps:
 
-We would typically start a project by taking a copy of this directory.
+1. Create a new R project in a fresh directory and open it in RStudio.
+2. Run `thekidsbiostats::create_project()` function. This function has various parameters to tweak how you would like to set up your project structure which can be read in the documentation. 
+
+To use our quarto templates, run `thekidsbiostats::create_template(file_name = "X")` in an existing R project. The file name parameter is mandatory and specifies the name of the .qmd file. 
+
+The directory parameter of the `create_template()` function specifies where the .qmd file will be located. This is in the "reports" folder by default, which is created as part of `create_project()` above. 
+
+Other parameters for create_template() determine the type of template, e.g. html or word format. 
