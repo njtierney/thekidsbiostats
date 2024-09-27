@@ -20,7 +20,7 @@ theme_institute(
 \arguments{
 \item{base_size}{The base font size, given in points. Default is 11.}
 
-\item{base_family}{The base font family used for the text. Default is \code{"Barlow Semi Condensed"}.}
+\item{base_family}{The base font family used for the text. Currently only \code{"Barlow Semi Condensed"} supported.}
 
 \item{base_line_size}{The base size for line elements (e.g., axis lines, grid lines). Calculated as \code{base_size/22} by default.}
 

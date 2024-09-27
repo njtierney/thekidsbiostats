@@ -5,7 +5,7 @@
 #' @details The function determines the operating system and selects appropriate font names for Windows or other systems. It applies a minimal theme with custom settings for plot title, axis title, and strip text, using the 'Barlow Semi Condensed' font family. It also adjusts color scales using the 'viridis' package.
 #'
 #' @param base_size The base font size, given in points. Default is 11.
-#' @param base_family The base font family used for the text. Default is `"Barlow Semi Condensed"`.
+#' @param base_family The base font family used for the text. Currently only `"Barlow Semi Condensed"` supported.
 #' @param base_line_size The base size for line elements (e.g., axis lines, grid lines). Calculated as `base_size/22` by default.
 #' @param base_rect_size The base size for rect elements (e.g., plot background, legend keys). Calculated as `base_size/22` by default.
 #' @param scale_colour_type Type of scale used for colours. Should be either `"discrete"` or `"continuous"`. Default is `"discrete"`.
@@ -101,7 +101,7 @@ theme_institute <- function(base_size = 11, base_family = "Barlow Semi Condensed
   )[[1]]
 
   list(
-    theme_minimal(base_family = "Barlow Semi Condensed",
+    theme_minimal(base_family = "Monsieur La Doulaise",
                   base_size = base_size,
                   base_line_size = base_line_size,
                   base_rect_size = base_rect_size) +
