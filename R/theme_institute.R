@@ -101,7 +101,7 @@ theme_institute <- function(base_size = 11, base_family = "Barlow Semi Condensed
   )[[1]]
 
   list(
-    theme_minimal(base_family = "Monsieur La Doulaise",
+    theme_minimal(base_family = "Barlow Semi Condensed",
                   base_size = base_size,
                   base_line_size = base_line_size,
                   base_rect_size = base_rect_size) +
