@@ -27,10 +27,10 @@
 #'
 
 thekids_table <- function(x,
-                          font.size = 8,
-                          font.size.header = 10,
+                          font.size = 10,
+                          font.size.header = 11,
                           line.spacing = 1.5,
-                          padding = 2,
+                          padding = 2.5,
                           colour = "CoolGrey"){
 
   if(!colour %in% names(thekids_palettes$primary)){
@@ -86,12 +86,30 @@ thekids_table <- function(x,
     big.mark="",
     table.layout="autofit")
 
-  if(any(class(x) == "gtsummary")){
+  if(any(class(x) %in% c("gtsummary"))){
     x %>%
       as_flex_table() %>%
       fontsize(part = "header", size = font.size.header) %>%
       color(color = "white", part = "header") %>%
       color(color = "#111921", part = "body") %>%
+      autofit()
+  } else if(any(class(x) %in% c("flextable"))){
+    x %>%
+      fontsize(part = "header", size = font.size.header) %>%
+      color(color = "white", part = "header") %>%
+      color(color = "#111921", part = "body") %>%
+      hline_top(part = "all") %>%
+      hline_bottom() %>%
+      autofit()
+  } else if(any(class(x) %in% c("gt_tbl"))){
+    x %>%
+      data.frame() %>%
+      flextable() %>%
+      fontsize(part = "header", size = font.size.header) %>%
+      color(color = "white", part = "header") %>%
+      color(color = "#111921", part = "body") %>%
+      hline_top(part = "all") %>%
+      hline_bottom() %>%
       autofit()
   } else {
     x %>%

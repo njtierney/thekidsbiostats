@@ -6,10 +6,10 @@
 \usage{
 thekids_table(
   x,
-  font.size = 8,
-  font.size.header = 10,
+  font.size = 10,
+  font.size.header = 11,
   line.spacing = 1.5,
-  padding = 2,
+  padding = 2.5,
   colour = "CoolGrey"
 )
 }
