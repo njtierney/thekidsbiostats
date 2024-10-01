@@ -34,7 +34,7 @@ thekids_table <- function(x,
                           colour = "CoolGrey"){
 
   if(!colour %in% names(thekids_palettes$primary)){
-    stop("The colour you have provided is not in the list. Please select from: Saffron, Pumpkin, Teal, DarkTeal, CelestialBlue, AzurBlue, MidnightBlue, or CoolGrey")
+    stop("The colour you have provided is not in the list. Please select from: Saffron, Pumpkin, Teal, DarkTeal, CelestialBlue, AzureBlue, MidnightBlue, or CoolGrey")
   }
 
   theme_thekids_zebra <- function (x,
