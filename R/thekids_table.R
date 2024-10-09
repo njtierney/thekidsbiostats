@@ -8,8 +8,9 @@
 #' @param font.size the font size for text in the body of the table, defaults to 8 (passed throught to set_flextable_defaults)
 #' @param font.size.header the font size for text in the header of the table, defaults to 10
 #' @param line.spacing line spacing for the table, defaults to 1.5 (passed throught to set_flextable_defaults)
-#' @param padding padding around all four sides of the text within the cell, defaults to 2 (passed throught to set_flextable_defaults)
+#' @param padding padding around all four sides of the text within the cell, defaults to 2.5 (passed throught to set_flextable_defaults)
 #' @param colour a colour platte from The Kids branding, options include "Saffron", "Pumpkin", "Teal", "DarkTeal", "CelestialBlue", "AzurBlue", "MidnightBlue", or "CoolGrey", defaults to 'CoolGrey'
+#' @param ... other parameters passed through to \code{\link[flextable]{set_flextable_defaults}}
 #'
 #' @return a flextable class object that will display in both html and word output
 #'
@@ -31,7 +32,8 @@ thekids_table <- function(x,
                           font.size.header = 11,
                           line.spacing = 1.5,
                           padding = 2.5,
-                          colour = "CoolGrey"){
+                          colour = "CoolGrey",
+                          ...){
 
   if(!colour %in% names(thekids_palettes$primary)){
     stop("The colour you have provided is not in the list. Please select from: Saffron, Pumpkin, Teal, DarkTeal, CelestialBlue, AzureBlue, MidnightBlue, or CoolGrey")
@@ -84,7 +86,8 @@ thekids_table <- function(x,
     line_spacing = line.spacing,
     padding = padding,
     big.mark="",
-    table.layout="autofit")
+    table.layout="autofit",
+    ...)
 
   if(any(class(x) %in% c("gtsummary"))){
     x %>%
