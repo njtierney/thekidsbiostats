@@ -33,6 +33,7 @@ thekids_table <- function(x,
                           line.spacing = 1.5,
                           padding = 2.5,
                           colour = "CoolGrey",
+                          striped = T,
                           ...){
 
   if(!colour %in% names(thekids_palettes$primary)){
@@ -43,8 +44,8 @@ thekids_table <- function(x,
                                    odd_header = thekids_palettes$primary[[paste(colour)]],
                                    odd_body = thekids_palettes$tint50[[paste(colour)]],
                                    even_header = "transparent",
-                                   even_body = "transparent")
-  {
+                                   even_body = "transparent"){
+
     if (!inherits(x, "flextable")) {
       stop(sprintf("Function `%s` supports only flextable objects.",
                    "theme_kids_zebra()"))
@@ -79,15 +80,67 @@ thekids_table <- function(x,
     x
   }
 
-  set_flextable_defaults(
-    font.family = "Barlow",
-    font.size = font.size,
-    theme_fun = theme_thekids_zebra,
-    line_spacing = line.spacing,
-    padding = padding,
-    big.mark="",
-    table.layout="autofit",
-    ...)
+  theme_thekids_non_zebra <- function (x,
+                                   odd_header = thekids_palettes$primary[[paste(colour)]],
+                                   odd_body = "transparent",
+                                   even_header = "transparent",
+                                   even_body = "transparent"){
+
+    if (!inherits(x, "flextable")) {
+      stop(sprintf("Function `%s` supports only flextable objects.",
+                   "theme_kids_zebra()"))
+    }
+    h_nrow <- nrow_part(x, "header")
+    f_nrow <- nrow_part(x, "footer")
+    b_nrow <- nrow_part(x, "body")
+    x <- border_remove(x)
+    x <- align(x = x, align = "center", part = "header")
+    if (h_nrow > 0) {
+      even <- seq_len(h_nrow)%%2 == 0
+      odd <- !even
+      x <- bg(x = x, i = odd, bg = odd_header, part = "header")
+      x <- bg(x = x, i = even, bg = even_header, part = "header")
+      x <- bold(x = x, bold = TRUE, part = "header")
+    }
+    if (f_nrow > 0) {
+      even <- seq_len(f_nrow)%%2 == 0
+      odd <- !even
+      x <- bg(x = x, i = odd, bg = odd_header, part = "footer")
+      x <- bg(x = x, i = even, bg = even_header, part = "footer")
+      x <- bold(x = x, bold = TRUE, part = "footer")
+    }
+    if (b_nrow > 0) {
+      even <- seq_len(b_nrow)%%2 == 0
+      odd <- !even
+      x <- bg(x = x, i = odd, bg = odd_body, part = "body")
+      x <- bg(x = x, i = even, bg = even_body, part = "body")
+    }
+    x <- align_text_col(x, align = "left", header = TRUE)
+    x <- align_nottext_col(x, align = "right", header = TRUE)
+    x
+  }
+
+  if(striped == T){
+    set_flextable_defaults(
+      font.family = "Barlow",
+      font.size = font.size,
+      theme_fun = theme_thekids_zebra,
+      line_spacing = line.spacing,
+      padding = padding,
+      big.mark="",
+      table.layout="autofit",
+      ...)
+  } else {
+    set_flextable_defaults(
+      font.family = "Barlow",
+      font.size = font.size,
+      theme_fun = theme_thekids_non_zebra,
+      line_spacing = line.spacing,
+      padding = padding,
+      big.mark="",
+      table.layout="autofit",
+      ...)
+  }
 
   if(any(class(x) %in% c("gtsummary"))){
     x %>%
