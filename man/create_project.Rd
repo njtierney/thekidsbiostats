@@ -5,6 +5,7 @@
 \title{Create a New Project Structure with Extension}
 \usage{
 create_project(
+  project_name,
   ext_name = "basic",
   data_raw = T,
   data = T,
@@ -14,7 +15,9 @@ create_project(
 )
 }
 \arguments{
-\item{ext_name}{A string. The name of the project extension to use. Defaults to \code{"basic"}. The extension must be available in the package's \verb{ext_proj/_extensions/} directory.}
+\item{project_name}{A string. The name of the project to create.}
+
+\item{ext_name}{A string. The type of project to create. Defaults to \code{"basic"}. The extension must be available in the package's \verb{ext_proj/_extensions/} directory.}
 
 \item{data_raw}{Logical. If \code{TRUE}, a \code{data_raw} directory will be created in the project. Defaults to \code{TRUE}.}
 

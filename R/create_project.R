@@ -4,7 +4,8 @@
 #' It can also create additional folders such as `data_raw`, `data`, `admin`, `reports`, and `docs`.
 #' The function copies specific files and folders from the chosen extension to the project directory.
 #'
-#' @param ext_name A string. The name of the project extension to use. Defaults to `"basic"`. The extension must be available in the package's `ext_proj/_extensions/` directory.
+#' @param project_name A string. The name of the project to create.
+#' @param ext_name A string. The type of project to create. Defaults to `"basic"`. The extension must be available in the package's `ext_proj/_extensions/` directory.
 #' @param data_raw Logical. If `TRUE`, a `data_raw` directory will be created in the project. Defaults to `TRUE`.
 #' @param data Logical. If `TRUE`, a `data` directory will be created in the project. Defaults to `TRUE`.
 #' @param admin Logical. If `TRUE`, an `admin` directory will be created in the project. Defaults to `TRUE`.
@@ -28,34 +29,57 @@
 #' }
 #'
 #' @export
-create_project <- function(ext_name = "basic",
+#'
+create_project <- function(project_name,
+                           ext_name = "basic",
                            data_raw = T,
                            data = T,
                            admin = T,
                            reports = T,
                            docs = T) {
 
+  base_dir <- rstudioapi::selectDirectory(caption = "Select a location to create the new project folder")
+              #tcltk::tk_choose.dir(default = getwd(),
+              #                     caption = "Select a location to create the new project folder")
+
+  project_dir <- base_dir
+
+  if (is.na(project_dir) || project_dir == "") {
+    stop("Please select a directory. Project creation cancelled.")
+  }
+
   valid_ext <- list.files(system.file("ext_proj/_extensions", package = "thekidsbiostats"))
 
   # check for available extensions
   stopifnot("Extension not in package" = ext_name %in% valid_ext)
 
+  # add home directory
+  dir.create(file.path(project_dir, project_name))
+
   # add requested directories
   if(data_raw) {
-    if(!file.exists("data_raw")) dir.create("data_raw")
+    if(!file.exists(file.path(project_dir, project_name, "data_raw"))) dir.create(file.path(project_dir, project_name, "data_raw"))
   }
   if(data) {
-    if(!file.exists("data")) dir.create("data")
+    if(!file.exists(file.path(project_dir, project_name, "data"))) dir.create(file.path(project_dir, project_name, "data"))
   }
   if(admin) {
-    if(!file.exists("admin")) dir.create("admin")
+    if(!file.exists(file.path(project_dir, project_name, "admin"))) dir.create(file.path(project_dir, project_name, "admin"))
   }
   if(reports) {
-    if(!file.exists("reports")) dir.create("reports")
+    if(!file.exists(file.path(project_dir, project_name, "reports"))) dir.create(file.path(project_dir, project_name, "reports"))
   }
   if(docs) {
-    if(!file.exists("docs")) dir.create("docs")
+    if(!file.exists(file.path(project_dir, project_name, "docs"))) dir.create(file.path(project_dir, project_name, "docs"))
   }
+
+  # Create the R Project file in the selected directory
+  rproj_file <- file.path(project_dir, project_name, paste0(project_name, ".Rproj"))
+  rproj_contents <- c("Version: 1.0") # Required
+
+  writeLines(rproj_contents, rproj_file)
+
+  message("Project structure and RProject file created at: ", paste0(project_dir, "/", project_name))
 
   # copy specific files and folders from extension
   files <- list.files(system.file(paste0("ext_proj/_extensions/", ext_name), package = "thekidsbiostats"))
