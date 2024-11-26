@@ -4,19 +4,15 @@
 \alias{create_template}
 \title{Create Template for Quarto}
 \usage{
-create_template(
-  file_name = NULL,
-  directory = "reports",
-  ext_name = "thekids-html"
-)
+create_template(file_name = NULL, directory = "reports", ext_name = "html")
 }
 \arguments{
 \item{file_name}{A string. The name of the new Quarto markdown (.qmd) file. This must be provided.}
 
-\item{directory}{A string. The name of the directory to plate the files. Default is "reports"}
+\item{directory}{A string. The name of the directory to plate the files. Default is "reports" (if this folder exists).}
 
 \item{ext_name}{A string. The name of the extension to use for the HTML template.
-Defaults to "thekids-html". "thekids-word" is an alternative which used the Word template.}
+Defaults to "html". "word" is an alternative which used the Word template.}
 }
 \description{
 This function creates a HTML or Word template in the current working directory
@@ -24,6 +20,10 @@ using a specified Quarto extension. It copies the template files to the
 \verb{_extensions/} directory and generates a new Quarto markdown (.qmd) file.
 }
 \details{
+An interactive screen will appear, asking the user to select where to generate the extension files and report template.
+If you are working in a project environment (e.g., created by \code{thekidsbiostats::create_project}), the default working
+directory will be the "reports" folder. Otherwise, any other folder can be selected.
+
 The function first checks whether a \verb{_extensions/} directory exists in the current working
 directory. If not, it creates one. It then copies the necessary extension files from the
 package's internal data to the \verb{_extensions/} directory. Finally, it creates
@@ -36,7 +36,7 @@ under \verb{ext_qmd/_extensions/}.
 \examples{
 \dontrun{
 create_template(file_name = "my_report")
-create_template(file_name = "my_doc", ext_name = "thekids-word")
+create_template(file_name = "my_doc", ext_name = "word")
 }
 
 }

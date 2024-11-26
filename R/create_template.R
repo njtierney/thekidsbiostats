@@ -4,10 +4,14 @@
 #' using a specified Quarto extension. It copies the template files to the
 #' `_extensions/` directory and generates a new Quarto markdown (.qmd) file.
 #'
+#' An interactive screen will appear, asking the user to select where to generate the extension files and report template.
+#' If you are working in a project environment (e.g., created by `thekidsbiostats::create_project`), the default working
+#' directory will be the "reports" folder. Otherwise, any other folder can be selected.
+#'
 #' @param file_name A string. The name of the new Quarto markdown (.qmd) file. This must be provided.
-#' @param directory A string. The name of the directory to plate the files. Default is "reports"
+#' @param directory A string. The name of the directory to plate the files. Default is "reports" (if this folder exists).
 #' @param ext_name A string. The name of the extension to use for the HTML template.
-#'        Defaults to "thekids-html". "thekids-word" is an alternative which used the Word template.
+#'        Defaults to "html". "word" is an alternative which used the Word template.
 #'
 #' @details
 #' The function first checks whether a `_extensions/` directory exists in the current working
@@ -22,17 +26,32 @@
 #' @examples
 #' \dontrun{
 #' create_template(file_name = "my_report")
-#' create_template(file_name = "my_doc", ext_name = "thekids-word")
+#' create_template(file_name = "my_doc", ext_name = "word")
 #' }
 #'
 #' @export
+
 create_template <- function(file_name = NULL,
                             directory = "reports",
-                            ext_name = "thekids-html") {
+                            ext_name = "html") {
 
   if (is.null(file_name)) {
     stop("You must provide a valid file_name")
   }
+
+  # Check if the "reports" folder exists, otherwise use the current working directory
+  default_dir <- ifelse(dir.exists(directory), directory, getwd())
+
+  # Allow user to select a directory, defaulting to the identified default directory
+  selected_dir <- rstudioapi::selectDirectory(caption = "Select directory to save the .qmd file",
+                                              path = default_dir)
+
+  if (is.null(selected_dir)) {
+    stop("No directory selected. Operation aborted.")
+  }
+
+  # Update directory based on user selection
+  directory <- selected_dir
 
   valid_ext <- list.files(system.file("ext_qmd/_extensions", package = "thekidsbiostats"))
 
