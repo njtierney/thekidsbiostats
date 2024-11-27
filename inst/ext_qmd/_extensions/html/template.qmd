@@ -20,24 +20,17 @@ reference-location: margin
 citation-location: margin 
 css: _extensions/thekids-html/styles.css
 editor_options: 
-  chunk_output_type: console
+  chunk_output_type: inline
 execute:
   echo: false
   warning: false
   message: false
-  error: true
+  error: false
 mainfont: Barlow
 ---
 
 ```{r init, include = F}
-library(targets)
-library(jtools)
-library(biometrics)
-
-# models <- tar_read(models)
-# plots <- tar_read(plots)
-
-
+library(thekidsbiostats)
 ```
 
 ## Introduction
@@ -60,17 +53,4 @@ Tables, explanatory plots, etc to examine the data prior to analysis.
 
 ## Analysis
 
-### Linear Model
-
-```{r echo = T}
-# summ(models$model1)
-```
-
 ## Supplementary Material
-
-### Plots
-
-```{r echo = F}
-# plots$model1
-```
-

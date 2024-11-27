@@ -17,26 +17,19 @@ format:
     highlight-style: github
     fig-dpi: 300
 editor_options: 
-  chunk_output_type: console
+  chunk_output_type: inline
 execute:
   echo: false
   warning: false
   message: false
-  error: true
+  error: false
 mainfont: Barlow
 fig-align: center
 fig-format: png
 ---
 
 ```{r init, include = F}
-library(targets)
-library(jtools)
-library(biometrics)
-
-# models <- tar_read(models)
-# plots <- tar_read(plots)
-
-
+library(thekidsbiostats)
 ```
 
 ## Introduction
