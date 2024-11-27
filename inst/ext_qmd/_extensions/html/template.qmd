@@ -18,7 +18,7 @@ format:
     self-contained: true
 reference-location: margin 
 citation-location: margin 
-css: _extensions/thekids-html/styles.css
+css: _extensions/html/styles.css
 editor_options: 
   chunk_output_type: inline
 execute:
