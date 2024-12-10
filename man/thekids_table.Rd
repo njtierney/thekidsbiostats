@@ -10,7 +10,8 @@ thekids_table(
   font.size.header = 11,
   line.spacing = 1.5,
   padding = 2.5,
-  colour = "CoolGrey"
+  colour = "CoolGrey",
+  ...
 )
 }
 \arguments{
@@ -22,9 +23,11 @@ thekids_table(
 
 \item{line.spacing}{line spacing for the table, defaults to 1.5 (passed throught to set_flextable_defaults)}
 
-\item{padding}{padding around all four sides of the text within the cell, defaults to 2 (passed throught to set_flextable_defaults)}
+\item{padding}{padding around all four sides of the text within the cell, defaults to 2.5 (passed throught to set_flextable_defaults)}
 
 \item{colour}{a colour platte from The Kids branding, options include "Saffron", "Pumpkin", "Teal", "DarkTeal", "CelestialBlue", "AzurBlue", "MidnightBlue", or "CoolGrey", defaults to 'CoolGrey'}
+
+\item{...}{other parameters passed through to \code{\link[flextable]{set_flextable_defaults}}}
 }
 \value{
 a flextable class object that will display in both html and word output
