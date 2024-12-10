@@ -83,7 +83,7 @@ thekids_model <- function(data, y, x, formula = "", model = "linear", ...){
     mod <- quantreg::rq(formula = form, data = dat_mod, ...)
   }
 
-  thekids_model_output(mod, dat_mod, ...)
+  thekids_model_output(mod, by = x, dat_mod, ...)
 }
 
 #' Generate Model Output for Specified Model Type

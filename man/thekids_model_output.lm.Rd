@@ -4,10 +4,15 @@
 \alias{thekids_model_output.lm}
 \title{Handle output for Linear Models}
 \usage{
-\method{thekids_model_output}{lm}(mod, ...)
+\method{thekids_model_output}{lm}(mod, by, dat_mod = NULL, ...)
 }
 \arguments{
 \item{mod}{A fitted linear model object of class \code{lm}.}
+
+\item{by}{Required. The main predictor of interest. Behaviour will
+differ when variable is continuous vs categorical}
+
+\item{dat_mod}{The data used to fit the model, passed from thekids_model}
 
 \item{...}{Additional arguments (currently unused).}
 }
