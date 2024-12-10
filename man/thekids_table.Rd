@@ -11,6 +11,7 @@ thekids_table(
   line.spacing = 1.5,
   padding = 2.5,
   colour = "CoolGrey",
+  striped = T,
   ...
 )
 }
