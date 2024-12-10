@@ -59,7 +59,7 @@ thekids_model <- function(data, y, x, formula = "", model = "linear", ...){
   if(formula == ""){
     form <- as.formula(paste0("`", y, "` ~ `", x, "`"))
   } else {
-    as.formula(paste0("`", y, "` ~ `", x, "` + ", formula))
+    form <- as.formula(paste0("`", y, "` ~ `", x, "` + ", formula))
   }
 
   # Reduce data to only columns used in analysis and only complete-case rows.
@@ -109,6 +109,6 @@ thekids_model <- function(data, y, x, formula = "", model = "linear", ...){
 #' @export
 thekids_model_output <- function(model, ...) {
 
-  NextMethod("model_output", model, ...)
+  UseMethod("thekids_model_output", model)
 
 }
