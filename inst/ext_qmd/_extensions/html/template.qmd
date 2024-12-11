@@ -13,9 +13,14 @@ format:
     code-fold: true
     toc: true
     toc-location: left
-    theme: journal
     html-table-processing: none
     self-contained: true
+    mainfont: "Barlow"
+    include-in-header: 
+      text: |
+        <style>
+          @import url('https://fonts.googleapis.com/css2?family=Barlow&display=swap');
+        </style>
 reference-location: margin 
 citation-location: margin 
 css: _extensions/html/styles.css
@@ -26,7 +31,6 @@ execute:
   warning: false
   message: false
   before: R thekidsbiostats:::.preprocess_qmd("{{ file }}")
-mainfont: "Placeholder"
 ---
 
 ```{r init, include = F}

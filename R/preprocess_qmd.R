@@ -1,18 +1,12 @@
 # Internal function to preprocess Quarto .qmd files
 .preprocess_qmd <- function(file_path) {
-  # Load the base font from options
   base_family <- getOption("thekidsbiostats.font", "Barlow")
 
-  # Read the file
+  google_fonts_link <- paste0("https://fonts.googleapis.com/css2?family=", gsub(" ", "+", base_family), "&display=swap")
+
   content <- readLines(file_path)
+  content <- gsub("mainfont: .*", paste0("mainfont: '", base_family, "'"), content)
+  content <- gsub("@import url\\('.*'\\);", paste0("@import url('", google_fonts_link, "');"), content)
 
-  # Update the mainfont argument in the YAML header
-  updated_content <- gsub(
-    pattern = "mainfont: .*",
-    replacement = paste0("mainfont: '", base_family, "'"),
-    x = content
-  )
-
-  # Write the updated content back to the file
-  writeLines(updated_content, file_path)
+  writeLines(content, file_path)
 }
