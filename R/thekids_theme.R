@@ -1,11 +1,11 @@
 #' Apply Institute Theme to ggplot2 Plots
 #'
-#' This function applies a custom theme to ggplot2 plots, incorporating specific fonts and colors to align with the institute's visual identity.
+#' This function applies a custom theme to ggplot2 plots, incorporating specific fonts and colours to align with the institute's visual identity.
 #'
 #' @details The function determines the operating system and selects appropriate font names for Windows or other systems. It applies a minimal theme with custom settings for plot title, axis title, and strip text, using the 'Barlow Semi Condensed' font family. It also adjusts color scales using the 'viridis' package.
 #'
 #' @param base_size The base font size, given in points. Default is 11.
-#' @param base_family The base font family used for the text. Currently only `"Barlow Semi Condensed"` supported.
+#' @param base_family The base font family used for the text. Any Google font can be used, but defaults to the package's set font option.
 #' @param base_line_size The base size for line elements (e.g., axis lines, grid lines). Calculated as `base_size/22` by default.
 #' @param base_rect_size The base size for rect elements (e.g., plot background, legend keys). Calculated as `base_size/22` by default.
 #' @param scale_colour_type Type of scale used for colours. Should be either `"discrete"` or `"continuous"`. Default is `"discrete"`.
@@ -37,26 +37,7 @@
 #' print(p2)
 #' }
 #'
-#' @note To use this theme, you need to have the 'Barlow Semi Condensed' font family installed on your system.
-#'
-#' @section Installing Fonts:
-#' To install the 'Barlow Semi Condensed' font family:
-#'
-#' 1. **Windows**:
-#'    - Download the fonts from [Google Fonts](https://fonts.google.com/specimen/Barlow+Semi+Condensed).
-#'    On Windows, the location is C:\\Windows\\Fonts.
-#'    (If you can’t move fonts there, use C:\\Users\\Username\\AppData\\Local\\Microsoft\\Windows\\Fonts\\
-#'    to install fonts that can only be accessed by your own username.)
-#'    - Install the following font files:
-#'      - `BarlowSemiCondensed-ExtraBold.ttf`
-#'      - `BarlowSemiCondensed-Medium.ttf`
-#'    - Using the extrafont package, run font_import() followed by loadfonts(device = "win")
-#'
-#' 2. **Mac OS and Linux**:
-#'    - Download the fonts from [Google Fonts](https://fonts.google.com/specimen/Barlow+Semi+Condensed).
-#'    - Install the following font files:
-#'      - `BarlowSemiCondensed-Bold.ttf`
-#'      - `BarlowSemiCondensed-Medium.ttf`
+#' @note If a Google font has not been loaded with the package, `thekids_theme` will load this function on your behalf.
 #'
 #' @export
 thekids_theme <- function(base_size = 11,
@@ -70,16 +51,23 @@ thekids_theme <- function(base_size = 11,
                           rev_colour = FALSE,
                           rev_fill = FALSE) {
 
-  # Check available fonts and set default base_family
-  available_fonts <- sysfonts::font_families_google()
-  base_family <- base_family %||%
-    if ("Barlow Semi Condensed" %in% available_fonts) {
-      "Barlow Semi Condensed"
-    } else {
-      getOption("thekidsbiostats.font", "Barlow")
-    }
+  # Default font from options
+  default_font <- getOption("thekidsbiostats.font", "Barlow")
 
-  # Define color scales
+  # Use default font if base_family is not provided
+  base_family <- base_family %||% default_font
+
+  # Load the font if it differs from the default
+  if (!identical(base_family, default_font)) {
+    if (base_family %in% sysfonts::font_families_google()) {
+      sysfonts::font_add_google(base_family)
+    } else {
+      warning("Font not found in Google Fonts. Using default: ", default_font)
+      base_family <- default_font
+    }
+  }
+
+  # Define color and fill functions
   colour_function <- case_when(
     colour_theme == "viridis" & scale_colour_type == "discrete" ~
       list(scale_colour_viridis_d(option = "plasma", end = 0.85)),
@@ -106,28 +94,18 @@ thekids_theme <- function(base_size = 11,
       list(scale_fill_thekids(palette = "typography", reverse = rev_fill))
   )[[1]]
 
-  # Return theme and scales
+  # Return the theme and functions
   list(
-    theme_minimal(base_family = base_family,
-                  base_size = base_size,
-                  base_line_size = base_line_size,
-                  base_rect_size = base_rect_size) +
-      theme(panel.grid.minor = element_blank(),
-            plot.title = element_text(
-              family = base_family,
-              face = "bold"  # Bold title
-            ),
-            axis.title = element_text(
-              family = base_family,
-              face = "bold"  # Bold axis titles
-            ),
-            strip.text = element_text(
-              family = base_family,
-              face = "bold",  # Bold facet labels
-              size = rel(1), hjust = 0
-            ),
-            plot.background = element_rect(fill = "white", colour = "white"),
-            strip.background = element_rect(fill = "grey80", colour = NA)),
+    theme_minimal(base_family = base_family, base_size = base_size,
+                  base_line_size = base_line_size, base_rect_size = base_rect_size) +
+      theme(
+        panel.grid.minor = element_blank(),
+        plot.title = element_text(family = base_family, face = "bold"),
+        axis.title = element_text(family = base_family, face = "bold"),
+        strip.text = element_text(family = base_family, face = "bold", size = rel(1), hjust = 0),
+        plot.background = element_rect(fill = "white", colour = "white"),
+        strip.background = element_rect(fill = "grey80", colour = NA)
+      ),
     colour_function,
     fill_function
   )

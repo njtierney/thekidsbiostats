@@ -13,10 +13,6 @@
   # Get the primary font name from options or default to "Barlow"
   font <- getOption("thekidsbiostats.font", "Barlow")
 
-  # Load necessary libraries
-  library(showtext)
-  library(sysfonts)
-
   # Get all available Google Fonts
   all_google_fonts <- sysfonts::font_families_google()
 
@@ -40,10 +36,9 @@
   showtext::showtext_auto()
 
   # Inform the user about loaded fonts
-  message <- paste0(
-    "Loaded Google Fonts: ",
-    paste(names(loaded_fonts)[loaded_fonts], collapse = ", ")
-  )
+  message <- paste0("Loaded Google Fonts: ",
+                    paste(names(loaded_fonts)[loaded_fonts], collapse = ", "))
+
   packageStartupMessage(message)
 }
 
