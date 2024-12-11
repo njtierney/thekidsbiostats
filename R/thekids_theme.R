@@ -59,21 +59,27 @@
 #'      - `BarlowSemiCondensed-Medium.ttf`
 #'
 #' @export
-thekids_theme <- function(base_size = 11, base_family = "Barlow Semi Condensed",
-                          base_line_size = base_size/22, base_rect_size = base_size/22,
-                          scale_colour_type = "discrete", scale_fill_type = "discrete",
-                          colour_theme = "viridis", fill_theme = "viridis",
-                          rev_colour = F, rev_fill = F) {
-  os <- Sys.info()[["sysname"]]
+thekids_theme <- function(base_size = 11,
+                          base_family = NULL,
+                          base_line_size = base_size / 22,
+                          base_rect_size = base_size / 22,
+                          scale_colour_type = "discrete",
+                          scale_fill_type = "discrete",
+                          colour_theme = "viridis",
+                          fill_theme = "viridis",
+                          rev_colour = FALSE,
+                          rev_fill = FALSE) {
 
-  font1 <- ifelse(os == "Windows",
-                  "Barlow Semi Condensed ExtraBold",
-                  "BarlowSemiCondensed-Bold")
+  # Check available fonts and set default base_family
+  available_fonts <- sysfonts::font_families_google()
+  base_family <- base_family %||%
+    if ("Barlow Semi Condensed" %in% available_fonts) {
+      "Barlow Semi Condensed"
+    } else {
+      getOption("thekidsbiostats.font", "Barlow")
+    }
 
-  font2 <- ifelse(os == "Windows",
-                  "Barlow Semi Condensed Medium",
-                  "BarlowSemiCondensed-Medium")
-
+  # Define color scales
   colour_function <- case_when(
     colour_theme == "viridis" & scale_colour_type == "discrete" ~
       list(scale_colour_viridis_d(option = "plasma", end = 0.85)),
@@ -84,7 +90,7 @@ thekids_theme <- function(base_size = 11, base_family = "Barlow Semi Condensed",
     colour_theme == "thekids_tint" ~
       list(scale_color_thekids(palette = "tint50", reverse = rev_colour)),
     colour_theme == "thekids_grey" ~
-      list(scale_color_thekids(palette = "typography", reverse = rev_colour)),
+      list(scale_color_thekids(palette = "typography", reverse = rev_colour))
   )[[1]]
 
   fill_function <- case_when(
@@ -97,23 +103,27 @@ thekids_theme <- function(base_size = 11, base_family = "Barlow Semi Condensed",
     fill_theme == "thekids_tint" ~
       list(scale_fill_thekids(palette = "tint50", reverse = rev_fill)),
     fill_theme == "thekids_grey" ~
-      list(scale_fill_thekids(palette = "typography", reverse = rev_fill)),
+      list(scale_fill_thekids(palette = "typography", reverse = rev_fill))
   )[[1]]
 
+  # Return theme and scales
   list(
-    theme_minimal(base_family = "Barlow Semi Condensed",
+    theme_minimal(base_family = base_family,
                   base_size = base_size,
                   base_line_size = base_line_size,
                   base_rect_size = base_rect_size) +
       theme(panel.grid.minor = element_blank(),
             plot.title = element_text(
-              family = font1
+              family = base_family,
+              face = "bold"  # Bold title
             ),
             axis.title = element_text(
-              family = font2
+              family = base_family,
+              face = "bold"  # Bold axis titles
             ),
             strip.text = element_text(
-              family = font1,
+              family = base_family,
+              face = "bold",  # Bold facet labels
               size = rel(1), hjust = 0
             ),
             plot.background = element_rect(fill = "white", colour = "white"),
@@ -122,6 +132,8 @@ thekids_theme <- function(base_size = 11, base_family = "Barlow Semi Condensed",
     fill_function
   )
 }
+
+
 
 #' Apply Institute Theme to ggplot2 Plots
 #'

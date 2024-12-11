@@ -25,8 +25,8 @@ execute:
   echo: false
   warning: false
   message: false
-  error: false
-mainfont: Barlow
+  before: R thekidsbiostats:::.preprocess_qmd("{{ file }}")
+mainfont: "Placeholder"
 ---
 
 ```{r init, include = F}

@@ -23,6 +23,7 @@ execute:
   warning: false
   message: false
   error: false
+  before: R thekidsbiostats:::.preprocess_qmd("{{ file }}")
 mainfont: Barlow
 fig-align: center
 fig-format: png

@@ -6,15 +6,15 @@
 \usage{
 thekids_theme(
   base_size = 11,
-  base_family = "Barlow Semi Condensed",
+  base_family = NULL,
   base_line_size = base_size/22,
   base_rect_size = base_size/22,
   scale_colour_type = "discrete",
   scale_fill_type = "discrete",
   colour_theme = "viridis",
   fill_theme = "viridis",
-  rev_colour = F,
-  rev_fill = F
+  rev_colour = FALSE,
+  rev_fill = FALSE
 )
 }
 \arguments{
