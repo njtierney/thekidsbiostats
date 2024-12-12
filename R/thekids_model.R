@@ -51,7 +51,8 @@ thekids_model <- function(data, y, x, formula = "", model = "linear", ...){
   if(!model %in% c(
     "linear",
     "negbin",
-    "quantile")) {
+    "quantile",
+    "ordinal")) {
     stop("Model type not yet supported.")
   }
 
@@ -81,6 +82,9 @@ thekids_model <- function(data, y, x, formula = "", model = "linear", ...){
   }
   if(model == "quantile") {
     mod <- quantreg::rq(formula = form, data = dat_mod, ...)
+  }
+  if(model == "quantile") {
+    mod <- ordinal::clm(formula = form, data = dat_mod, ...)
   }
 
   thekids_model_output(mod, by = x, dat_mod, ...)
