@@ -61,6 +61,7 @@ thekids_theme <- function(base_size = 11,
   if (!identical(base_family, default_font)) {
     if (base_family %in% sysfonts::font_families_google()) {
       sysfonts::font_add_google(base_family)
+      message("Google font installed: ", base_family)
     } else {
       warning("Font not found in Google Fonts. Using default: ", default_font)
       base_family <- default_font
