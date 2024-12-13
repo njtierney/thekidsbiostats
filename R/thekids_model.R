@@ -47,10 +47,11 @@ thekids_model <- function(data, y, x, formula = "", model = "linear", ...){
 
   # Check for valid model
   if(!model %in% c(
-    "linear",
-    "negbin",
-    "quantile",
-    "ordinal")) {
+    "linear"#,
+    # "negbin",
+    # "quantile",
+    # "ordinal"
+    )) {
     stop("Model type not yet supported.")
   }
 
