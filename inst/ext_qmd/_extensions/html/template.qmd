@@ -30,7 +30,6 @@ execute:
   echo: false
   warning: false
   message: false
-  before: R thekidsbiostats:::.preprocess_qmd("{{ file }}")
 ---
 
 ```{r init, include = F}
