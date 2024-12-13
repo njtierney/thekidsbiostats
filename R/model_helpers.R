@@ -1,3 +1,30 @@
+#' Generate Model Output for Specified Model Type
+#'
+#' This function identifies the type of the fitted model and chooses the appropriate
+#' method to produce model output.
+#'
+#' @param model A fitted model object produced by \code{thekids_model} or another modeling function.
+#' @param ... Additional arguments passed to the output method for the specific model type.
+#'
+#' @return Output specific to the fitted model type, as determined by the appropriate
+#'   output method (e.g., summary or custom output).
+#'
+#' @details
+#' This function acts as a wrapper, delegating the call to the appropriate
+#' output method based on the class of the model object. The actual behavior
+#' is determined by the specific method implementation for the model type.
+#'
+#' @examples
+#' # Assuming `mod` is a fitted model object
+#' # thekids_model_output(mod)
+#'
+#' @export
+thekids_model_output <- function(model, ...) {
+
+  UseMethod("thekids_model_output", model)
+
+}
+
 #' Handle output for Linear Models
 #'
 #' Internal function to handle the output for objects of class \code{lm}.
@@ -15,9 +42,11 @@
 #' @keywords internal
 #'
 #' @exportS3Method thekidsbiostats::thekids_model_output
-thekids_model_output.lm <- function(mod, by, mod_dat = NULL, ...) {
+thekids_model_output.lm <- function(mod, by, data = NULL, ...) {
 
-  if(is.null(mod_dat)) mod_dat <- mod$model
+  if(is.null(data)) {
+    mod_dat <- mod$model
+  } else mod_dat <- data
 
   y <- all.vars(formula(mod))[1]
 

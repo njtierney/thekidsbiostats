@@ -88,29 +88,4 @@ thekids_model <- function(data, y, x, formula = "", model = "linear", ...){
   thekids_model_output(mod, by = x, dat_mod, ...)
 }
 
-#' Generate Model Output for Specified Model Type
-#'
-#' This function identifies the type of the fitted model and chooses the appropriate
-#' method to produce model output.
-#'
-#' @param model A fitted model object produced by \code{thekids_model} or another modeling function.
-#' @param ... Additional arguments passed to the output method for the specific model type.
-#'
-#' @return Output specific to the fitted model type, as determined by the appropriate
-#'   output method (e.g., summary or custom output).
-#'
-#' @details
-#' This function acts as a wrapper, delegating the call to the appropriate
-#' output method based on the class of the model object. The actual behavior
-#' is determined by the specific method implementation for the model type.
-#'
-#' @examples
-#' # Assuming `mod` is a fitted model object
-#' # thekids_model_output(mod)
-#'
-#' @export
-thekids_model_output <- function(model, ...) {
 
-  UseMethod("thekids_model_output", model)
-
-}
