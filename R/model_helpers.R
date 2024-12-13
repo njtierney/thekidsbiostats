@@ -5,7 +5,7 @@
 #' @param mod A fitted linear model object of class \code{lm}.
 #' @param by Required. The main predictor of interest. Behaviour will
 #' differ when variable is continuous vs categorical
-#' @param dat_mod The data used to fit the model, passed from thekids_model
+#' @param mod_dat The data used to fit the model, passed from thekids_model
 #' @param ... Additional arguments (currently unused).
 #'
 #' @return A list of model-specific output.
@@ -15,14 +15,14 @@
 #' @keywords internal
 #'
 #' @exportS3Method thekidsbiostats::thekids_model_output
-thekids_model_output.lm <- function(mod, by, dat_mod = NULL, ...) {
+thekids_model_output.lm <- function(mod, by, mod_dat = NULL, ...) {
 
-  if(is.null(dat_mod)) dat_mod <- mod$model
+  if(is.null(mod_dat)) mod_dat <- mod$model
 
   y <- all.vars(formula(mod))[1]
 
-  if(is.character(dat_mod[[by]])) {
-    mod_desc <- dat_mod %>%
+  if(is.character(mod_dat[[by]]) | is.factor(mod_dat[[by]])) {
+    mod_desc <- mod_dat %>%
       tbl_summary(by = by,
                   type = list(where(is.numeric) ~ "continuous"),
                   statistic = list(all_continuous() ~ "{mean} ({sd}) [{N_nonmiss}]")) %>%
@@ -31,7 +31,7 @@ thekids_model_output.lm <- function(mod, by, dat_mod = NULL, ...) {
       bold_labels() %>%
       suppressMessages() %>% suppressWarnings()
 
-    mod_desc_plot <- dat_mod %>%
+    mod_desc_plot <- mod_dat %>%
       mutate(x = factor(.[[by]])) %>%
       ggplot(aes(x = x, y = .data[[y]],
                  colour = x, group = x, fill = x)) +
@@ -48,26 +48,27 @@ thekids_model_output.lm <- function(mod, by, dat_mod = NULL, ...) {
            caption = "Black 'X' on red circle indicates mean (±SE)",
            x = by)
   } else {
-    mod_desc <- dat_mod %>%
+    mod_desc <- mod_dat %>%
       tbl_summary(type = list(where(is.numeric) ~ "continuous"),
                   statistic = list(all_continuous() ~ "{mean} ({sd}) [{N_nonmiss}]")) %>%
       bold_labels() %>%
       suppressMessages() %>% suppressWarnings()
 
-    mod_desc_plot <- dat_mod %>%
+    mod_desc_plot <- mod_dat %>%
       mutate(x = .[[by]]) %>%
       ggplot(aes(x = x, y = .data[[y]])) +
-      geom_jitter(width = 0.05, height = 0.05, alpha = 0.6, col = thekids_colours[[3]]) +
-      geom_smooth(fill = thekids_colours[[1]], col = thekids_colours[[1]]) +
+      geom_jitter(width = 0.05, height = 0.05, alpha = 0.5, size = 3,col = thekids_colours[[3]]) +
+      geom_smooth(fill = thekids_colours[[1]], col = thekids_colours[[1]],
+                  method = "lm") +
       thekids_theme() +
       theme(plot.caption = element_text(size = 12, face = "italic"),
             legend.position = "none") +
-      labs(title = "Dot plot with line of best bit (LOESS)",
+      labs(title = "Scatterplot with line of best bit (method = \"lm\")",
            subtitle = paste0(y, " plotted by ", by),
            x = by)
   }
 
-  mod_diag <- autoplot(mod)
+  mod_diag <- ggfortify:::autoplot.lm(mod)
 
   mod_output <- mod %>%
     tbl_regression(intercept = T,
@@ -79,7 +80,7 @@ thekids_model_output.lm <- function(mod, by, dat_mod = NULL, ...) {
     )
 
 
-  return(list(mod_dat = dat_mod,
+  return(list(mod_dat = mod_dat,
               mod_desc = mod_desc,
               mod_desc_plot = mod_desc_plot,
               mod_diag = mod_diag,
