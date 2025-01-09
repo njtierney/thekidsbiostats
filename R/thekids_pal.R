@@ -9,7 +9,7 @@
 #' @export
 thekids_pal <- function(palette = "primary", reverse = FALSE, ...) {
 
-  pal <- biometrics::thekids_palettes[[palette]]
+  pal <- thekidsbiostats::thekids_palettes[[palette]]
 
   if (reverse) pal <- rev(pal)
 
