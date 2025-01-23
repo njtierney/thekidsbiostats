@@ -58,7 +58,7 @@ To install the 'Barlow Semi Condensed' font family:
 \itemize{
 \item Download the fonts from \href{https://fonts.google.com/specimen/Barlow+Semi+Condensed}{Google Fonts}.
 On Windows, the location is C:\\Windows\\Fonts.
-(If you can’t move fonts there, use C:\\Users\\Username\\AppData\\Local\\Microsoft\\Windows\\Fonts\\
+(If you can’t move fonts there, use C:\\\\Users\Username\AppData\Local\Microsoft\Windows\Fonts
 to install fonts that can only be accessed by your own username.)
 \item Install the following font files:
 \itemize{

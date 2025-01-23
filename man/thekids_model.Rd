@@ -44,12 +44,10 @@ for streamlined customization of model outputs.
 \examples{
 # Example 1: Linear model
 data(mtcars)
-thekids_model(mtcars, y = "mpg", x = "hp", model = "linear")
+thekids_model(mtcars, y = "mpg", x = "wt", model = "linear")
 
-# Example 2: Negative binomial model
-library(MASS)
-data(quine)
-thekids_model(quine, y = "Days", x = "Age", model = "negbin")
+# Example 2: Linear model with factor
+thekids_model(mtcars \%>\% mutate(cyl = as.factor(cyl)), y = "mpg", x = "cyl", model = "linear")
 
 # Example 3: Quantile regression
 library(quantreg)

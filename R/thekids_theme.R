@@ -45,7 +45,7 @@
 #' 1. **Windows**:
 #'    - Download the fonts from [Google Fonts](https://fonts.google.com/specimen/Barlow+Semi+Condensed).
 #'    On Windows, the location is C:\\Windows\\Fonts.
-#'    (If you can’t move fonts there, use C:\\Users\\Username\\AppData\\Local\\Microsoft\\Windows\\Fonts\\
+#'    (If you can’t move fonts there, use C:\\\\Users\Username\AppData\Local\Microsoft\Windows\Fonts
 #'    to install fonts that can only be accessed by your own username.)
 #'    - Install the following font files:
 #'      - `BarlowSemiCondensed-ExtraBold.ttf`
@@ -170,7 +170,7 @@ thekids_theme <- function(base_size = 11, base_family = "Barlow Semi Condensed",
 #' 1. **Windows**:
 #'    - Download the fonts from [Google Fonts](https://fonts.google.com/specimen/Barlow+Semi+Condensed).
 #'    On Windows, the location is C:\\Windows\\Fonts.
-#'    (If you can’t move fonts there, use C:\\Users\\Username\\AppData\\Local\\Microsoft\\Windows\\Fonts\\
+#'    (If you can’t move fonts there, use C:\\\\Users\Username\AppData\Local\Microsoft\Windows\Fonts
 #'    to install fonts that can only be accessed by your own username.)
 #'    - Install the following font files:
 #'      - `BarlowSemiCondensed-ExtraBold.ttf`
