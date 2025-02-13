@@ -6,21 +6,21 @@
 \usage{
 thekids_theme(
   base_size = 11,
-  base_family = NULL,
+  base_family = "Barlow Semi Condensed",
   base_line_size = base_size/22,
   base_rect_size = base_size/22,
   scale_colour_type = "discrete",
   scale_fill_type = "discrete",
   colour_theme = "viridis",
   fill_theme = "viridis",
-  rev_colour = FALSE,
-  rev_fill = FALSE
+  rev_colour = F,
+  rev_fill = F
 )
 }
 \arguments{
 \item{base_size}{The base font size, given in points. Default is 11.}
 
-\item{base_family}{The base font family used for the text. Any Google font can be used, but defaults to the package's set font option.}
+\item{base_family}{The base font family used for the text. Currently only \code{"Barlow Semi Condensed"} supported.}
 
 \item{base_line_size}{The base size for line elements (e.g., axis lines, grid lines). Calculated as \code{base_size/22} by default.}
 
@@ -42,14 +42,43 @@ thekids_theme(
 A list of ggplot2 theme elements and scale adjustments.
 }
 \description{
-This function applies a custom theme to ggplot2 plots, incorporating specific fonts and colours to align with the institute's visual identity.
+This function applies a custom theme to ggplot2 plots, incorporating specific fonts and colors to align with the institute's visual identity.
 }
 \details{
 The function determines the operating system and selects appropriate font names for Windows or other systems. It applies a minimal theme with custom settings for plot title, axis title, and strip text, using the 'Barlow Semi Condensed' font family. It also adjusts color scales using the 'viridis' package.
 }
 \note{
-If a Google font has not been loaded with the package, \code{thekids_theme} will load this function on your behalf.
+To use this theme, you need to have the 'Barlow Semi Condensed' font family installed on your system.
 }
+\section{Installing Fonts}{
+
+To install the 'Barlow Semi Condensed' font family:
+\enumerate{
+\item \strong{Windows}:
+\itemize{
+\item Download the fonts from \href{https://fonts.google.com/specimen/Barlow+Semi+Condensed}{Google Fonts}.
+On Windows, the location is C:\\Windows\\Fonts.
+(If you can’t move fonts there, use C:\\\\Users\Username\AppData\Local\Microsoft\Windows\Fonts
+to install fonts that can only be accessed by your own username.)
+\item Install the following font files:
+\itemize{
+\item \code{BarlowSemiCondensed-ExtraBold.ttf}
+\item \code{BarlowSemiCondensed-Medium.ttf}
+}
+\item Using the extrafont package, run font_import() followed by loadfonts(device = "win")
+}
+\item \strong{Mac OS and Linux}:
+\itemize{
+\item Download the fonts from \href{https://fonts.google.com/specimen/Barlow+Semi+Condensed}{Google Fonts}.
+\item Install the following font files:
+\itemize{
+\item \code{BarlowSemiCondensed-Bold.ttf}
+\item \code{BarlowSemiCondensed-Medium.ttf}
+}
+}
+}
+}
+
 \examples{
 \dontrun{
 # Install the required fonts first (see below)
