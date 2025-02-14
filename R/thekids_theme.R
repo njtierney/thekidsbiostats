@@ -5,7 +5,7 @@
 #' @details The function determines the operating system and selects appropriate font names for Windows or other systems. It applies a minimal theme with custom settings for plot title, axis title, and strip text, using the 'Barlow Semi Condensed' font family. It also adjusts color scales using the 'viridis' package.
 #'
 #' @param base_size The base font size, given in points. Default is 11.
-#' @param base_family The base font family used for the text. Any Google font can be used, but defaults to the package's set font option.
+#' @param base_family The base font family used for the text. Any Google font can be used, but defaults Barlow.
 #' @param base_line_size The base size for line elements (e.g., axis lines, grid lines). Calculated as `base_size/22` by default.
 #' @param base_rect_size The base size for rect elements (e.g., plot background, legend keys). Calculated as `base_size/22` by default.
 #' @param scale_colour_type Type of scale used for colours. Should be either `"discrete"` or `"continuous"`. Default is `"discrete"`.
@@ -14,6 +14,7 @@
 #' @param fill_theme Colour palette to use for fill scales. Must be one of `"viridis"`,`"thekids"`,`"thekids_tint"`,`"thekids_grey"`. Default is `"viridis"`.
 #' @param rev_colour Logical. Should the colour palette be reversed? Default is `FALSE`.
 #' @param rev_fill Logical. Should the fill palette be reversed? Default is `FALSE`.
+#' @param fig_dpi Base DPI for figure. Only applicable when Barlow font family (default) is *not* selected.
 #'
 #' @return A list of ggplot2 theme elements and scale adjustments.
 #'
@@ -40,6 +41,83 @@
 #' @note If a Google font has not been loaded with the package, `thekids_theme` will load this function on your behalf.
 #'
 #' @export
+
+#thekids_theme <- function(base_size = 11,
+#                          base_family = NULL,
+#                          base_line_size = base_size / 22,
+#                          base_rect_size = base_size / 22,
+#                          scale_colour_type = "discrete",
+#                          scale_fill_type = "discrete",
+#                          colour_theme = "viridis",
+#                          fill_theme = "viridis",
+#                          rev_colour = FALSE,
+#                          rev_fill = FALSE) {
+#
+#  # Default font from options
+#  default_font <- getOption("thekidsbiostats.font", "Barlow")
+#
+#  # Use default font if base_family is not provided
+#  base_family <- base_family %||% default_font
+#
+#  # Ensure the font is available before applying it
+#  available_fonts <- sysfonts::font_families_google()
+#
+#  if (!base_family %in% available_fonts) {
+#    warning("Font not found in Google Fonts. Using default: ", default_font)
+#    base_family <- default_font
+#  }
+#
+#  # Register font if it hasn't been added
+#  if (!base_family %in% sysfonts::font_families()) {
+#    tryCatch({
+#      sysfonts::font_add_google(base_family, base_family)
+#      showtext::showtext_auto()
+#    }, error = function(e) {
+#      warning("Could not add Google Font: ", base_family, ". Default system font will be used.")
+#    })
+#  }
+#
+#  # Define color and fill functions
+#  colour_function <- switch(
+#    colour_theme,
+#    "viridis" = if (scale_colour_type == "discrete") {
+#      scale_colour_viridis_d(option = "plasma", end = 0.85)
+#    } else {
+#      scale_colour_viridis_c(option = "plasma", end = 0.85)
+#    },
+#    "thekids" = scale_color_thekids(palette = "primary", reverse = rev_colour),
+#    "thekids_tint" = scale_color_thekids(palette = "tint50", reverse = rev_colour),
+#    "thekids_grey" = scale_color_thekids(palette = "typography", reverse = rev_colour),
+#    NULL
+#  )
+#
+#  fill_function <- switch(
+#    fill_theme,
+#    "viridis" = if (scale_fill_type == "discrete") {
+#      scale_fill_viridis_d(option = "plasma", end = 0.85)
+#    } else {
+#      scale_fill_viridis_c(option = "plasma", end = 0.85)
+#    },
+#    "thekids" = scale_fill_thekids(palette = "primary", reverse = rev_fill),
+#    "thekids_tint" = scale_fill_thekids(palette = "tint50", reverse = rev_fill),
+#    "thekids_grey" = scale_fill_thekids(palette = "typography", reverse = rev_fill),
+#    NULL
+#  )
+#
+#  # Return the theme with optional color and fill functions
+#  theme_minimal(base_family = base_family, base_size = base_size,
+#                base_line_size = base_line_size, base_rect_size = base_rect_size) +
+#    theme(
+#      panel.grid.minor = element_blank(),
+#      plot.title = element_text(family = base_family, face = "bold"),
+#      axis.title = element_text(family = base_family, face = "bold"),
+#      strip.text = element_text(family = base_family, face = "bold", size = rel(1), hjust = 0),
+#      plot.background = element_rect(fill = "white", colour = "white"),
+#      strip.background = element_rect(fill = "grey80", colour = NA)
+#    ) +
+#    if (!is.null(colour_function)) colour_function else NULL +
+#    if (!is.null(fill_function)) fill_function else NULL
+#}
 thekids_theme <- function(base_size = 11,
                           base_family = NULL,
                           base_line_size = base_size / 22,
@@ -49,23 +127,29 @@ thekids_theme <- function(base_size = 11,
                           colour_theme = "viridis",
                           fill_theme = "viridis",
                           rev_colour = FALSE,
-                          rev_fill = FALSE) {
+                          rev_fill = FALSE,
+                          fig_dpi = 300) {
 
   # Default font from options
-  default_font <- getOption("thekidsbiostats.font", "Barlow")
+  default_font <- "Barlow"  # No need for getOption()
 
   # Use default font if base_family is not provided
   base_family <- base_family %||% default_font
 
-  # Load the font if it differs from the default
-  if (!identical(base_family, default_font)) {
-    if (base_family %in% sysfonts::font_families_google()) {
-      sysfonts::font_add_google(base_family)
-      message("Google font installed: ", base_family)
-    } else {
-      warning("Font not found in Google Fonts. Using default: ", default_font)
+  # Ensure the font is available before applying it
+  if (!(base_family %in% sysfonts::font_families())) {
+    tryCatch({
+      sysfonts::font_add_google(base_family, base_family)
+    }, error = function(e) {
+      warning("Could not load Google Font: ", base_family, ". Defaulting to: ", default_font)
       base_family <- default_font
-    }
+    })
+  }
+
+  # Ensure showtext is active ONLY when a custom font is specified
+  if (base_family != default_font) {
+    showtext::showtext_opts(dpi = fig_dpi)  # Match the Quarto YAML dpi setting
+    showtext::showtext_auto()
   }
 
   # Define color and fill functions
