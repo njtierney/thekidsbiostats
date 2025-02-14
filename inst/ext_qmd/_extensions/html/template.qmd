@@ -31,14 +31,11 @@ execute:
   warning: false
   message: false
   error: false
-mainfont: Barlow
 callout-icon: false
 ---
 
 ```{r init, include = F}
 library(thekidsbiostats)
-
-
 ```
 
 ## Introduction
@@ -78,3 +75,11 @@ Tables, explanatory plots, etc to examine the data prior to analysis.
 ## Analysis
 
 ## Supplementary Material
+
+
+## Reproducibility Information
+
+```{r}
+sessionInfo()
+```
+
