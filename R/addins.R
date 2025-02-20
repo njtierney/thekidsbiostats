@@ -1,62 +1,61 @@
-#' Insert a Quarto Callout Chunk
+#' Insert Callout via RStudio Addin
 #'
-#' This function allows the user to insert a Quarto callout chunk into the
-#' currently active RStudio editor. The user is prompted to choose the type
-#' of callout (e.g., note, tip, caution, important, or warning), and the
-#' corresponding chunk is generated in the correct Quarto syntax.
+#' Launches a Shiny app as an RStudio addin to insert a Quarto callout at the cursor position.
+#' The user selects a callout type from a dropdown, sees a preview color, and inserts formatted
+#' callout text into the current script.
 #'
-#' @return Inserts the selected callout chunk into the RStudio editor.
-#' Returns `NULL` invisibly.
-#' @examples
-#' \dontrun{
-#' # Use the addin in RStudio to insert a callout
-#' insert_callout()
-#' }
-#' @details
-#' This function uses the `rstudioapi` package to insert text directly
-#' into the active editor. It generates Quarto callout chunks in the format:
-#'
-#' ```
-#' ::: {.callout-type}
-#' Your content here.
-#' :::
-#' ```
-#' where `type` corresponds to the callout type chosen by the user.
-#'
-#' The available callout types are:
-#' - `note`
-#' - `tip`
-#' - `caution`
-#' - `important`
-#' - `warning`
-#'
-#' @import rstudioapi
-#' @importFrom glue glue
+#' @return A Shiny application that runs within RStudio.
 #' @export
+#'
+#' @examples
+#' if (interactive()) {
+#'   insert_callout()
+#' }
 insert_callout <- function() {
-  # Define the available callout types
-  callout_types <- c("note", "tip", "caution", "important", "warning")
+  ui <- fluidPage(
+    titlePanel("Insert Callout"),
 
-  # Use a prompt to ask for the callout type
-  selected_type <- rstudioapi::showPrompt(
-    title = "Choose Callout Type",
-    message = "Enter one of the following: note, tip, caution, important, warning.",
-    default = "note"
+    # Selection input
+    selectInput("select", "Choose a callout option:",
+                choices = c("note", "tip", "important", "warning")),
+
+    # Color display
+    uiOutput("color_box"),
+
+    # Action button to insert text
+    actionButton("insert", "Insert Text into Script")
   )
 
-  # If the user cancels or provides an invalid response, stop
-  if (is.null(selected_type) || !selected_type %in% callout_types) {
-    rstudioapi::showDialog("Invalid Callout Type", "Please select a valid callout type next time.")
-    return()
-  }
+  server <- function(input, output, session) {
+    # Mapping values to colors and text
+    color_map <- c("note" = "#a1b7d4",
+                   "tip" = "#80D1CE",
+                   "important" = "#FAB580",
+                   "warning" = "#F8DA9A")
 
-  # Define the Quarto callout chunk template with escaped braces
-  callout_chunk <- glue::glue("
-::: {{.callout-{selected_type}}}
+    # Render color box
+    output$color_box <- renderUI({
+      req(input$select)  # Ensure input is valid before proceeding
+      div(style = paste("background-color:", color_map[input$select],
+                        "; height: 30px; width: 80px; border: 1px solid black;"))
+    })
+
+    # Insert mapped text at the cursor position in RStudio
+    observeEvent(input$insert, {
+      req(input$select)  # Ensure input is valid before inserting
+      if (rstudioapi::isAvailable()) {
+        rstudioapi::insertText(
+          glue::glue("
+::: {{.callout-{input$select}}}
 Your content here.
 :::
 ")
+        )
+      }
+    })
+  }
 
-  # Insert the chunk into the active RStudio editor
-  rstudioapi::insertText(callout_chunk)
+  # Set window size using dialogViewer
+  viewer <- shiny::dialogViewer("Insert Callout", width = 300, height = 250)
+  shiny::runGadget(shinyApp(ui, server), viewer = viewer)
 }

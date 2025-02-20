@@ -1,4 +1,4 @@
 Name: Insert Callout
-Description: Insert a Quarto callout chunk of the chosen type.
+Description: Inserts a Quarto callout at the current cursor position.
 Binding: insert_callout
-Interactive: false
+Interactive: true

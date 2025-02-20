@@ -2,43 +2,20 @@
 % Please edit documentation in R/addins.R
 \name{insert_callout}
 \alias{insert_callout}
-\title{Insert a Quarto Callout Chunk}
+\title{Insert Callout via RStudio Addin}
 \usage{
 insert_callout()
 }
 \value{
-Inserts the selected callout chunk into the RStudio editor.
-Returns \code{NULL} invisibly.
+A Shiny application that runs within RStudio.
 }
 \description{
-This function allows the user to insert a Quarto callout chunk into the
-currently active RStudio editor. The user is prompted to choose the type
-of callout (e.g., note, tip, caution, important, or warning), and the
-corresponding chunk is generated in the correct Quarto syntax.
-}
-\details{
-This function uses the \code{rstudioapi} package to insert text directly
-into the active editor. It generates Quarto callout chunks in the format:
-
-\if{html}{\out{<div class="sourceCode">}}\preformatted{::: \{.callout-type\}
-Your content here.
-:::
-}\if{html}{\out{</div>}}
-
-where \code{type} corresponds to the callout type chosen by the user.
-
-The available callout types are:
-\itemize{
-\item \code{note}
-\item \code{tip}
-\item \code{caution}
-\item \code{important}
-\item \code{warning}
-}
+Launches a Shiny app as an RStudio addin to insert a Quarto callout at the cursor position.
+The user selects a callout type from a dropdown, sees a preview color, and inserts formatted
+callout text into the current script.
 }
 \examples{
-\dontrun{
-# Use the addin in RStudio to insert a callout
-insert_callout()
+if (interactive()) {
+  insert_callout()
 }
 }

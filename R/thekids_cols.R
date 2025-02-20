@@ -13,3 +13,4 @@ thekids_cols <- function(...) {
   thekidsbiostats::thekids_colours[cols]
 
 }
+
