@@ -8,8 +8,8 @@ thekids_cols <- function(...) {
   cols <- c(...)
 
   if (is.null(cols))
-    return (biometrics::thekids_colours)
+    return (thekidsbiostats::thekids_colours)
 
-  biometrics::thekids_colours[cols]
+  thekidsbiostats::thekids_colours[cols]
 
 }
