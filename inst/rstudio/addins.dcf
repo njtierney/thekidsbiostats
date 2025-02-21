@@ -2,3 +2,8 @@ Name: Insert Callout
 Description: Inserts a Quarto callout at the current cursor position.
 Binding: insert_callout
 Interactive: true
+
+Name: Insert Margin Comment
+Description: Inserts a Quarto margin comment at the current cursor position.
+Binding: insert_margin
+Interactive: true
