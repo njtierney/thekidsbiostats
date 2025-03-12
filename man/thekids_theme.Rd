@@ -21,7 +21,7 @@ thekids_theme(
 \arguments{
 \item{base_size}{The base font size, given in points. Default is 11.}
 
-\item{base_family}{The base font family used for the text. Any Google font can be used, but defaults Barlow.}
+\item{base_family}{The base font family used for the text (default Barlow). Most Google Fonts are supported (see Note).}
 
 \item{base_line_size}{The base size for line elements (e.g., axis lines, grid lines). Calculated as \code{base_size/22} by default.}
 
@@ -52,6 +52,8 @@ The function determines the operating system and selects appropriate font names 
 }
 \note{
 If a Google font has not been loaded with the package, \code{thekids_theme} will load this function on your behalf.
+
+Supported Google Fonts are those that exist in \code{sysfonts::font_families_google()}.
 }
 \examples{
 \dontrun{
@@ -72,5 +74,4 @@ p2 <- ggplot(mtcars, aes(x = factor(cyl), y = wt, fill = factor(cyl))) +
 
 print(p2)
 }
-
 }

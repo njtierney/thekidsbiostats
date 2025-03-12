@@ -5,7 +5,7 @@
 #' @details The function determines the operating system and selects appropriate font names for Windows or other systems. It applies a minimal theme with custom settings for plot title, axis title, and strip text, using the 'Barlow Semi Condensed' font family. It also adjusts color scales using the 'viridis' package.
 #'
 #' @param base_size The base font size, given in points. Default is 11.
-#' @param base_family The base font family used for the text. Any Google font can be used, but defaults Barlow.
+#' @param base_family The base font family used for the text (default Barlow). Most Google Fonts are supported (see Note).
 #' @param base_line_size The base size for line elements (e.g., axis lines, grid lines). Calculated as `base_size/22` by default.
 #' @param base_rect_size The base size for rect elements (e.g., plot background, legend keys). Calculated as `base_size/22` by default.
 #' @param scale_colour_type Type of scale used for colours. Should be either `"discrete"` or `"continuous"`. Default is `"discrete"`.
@@ -15,6 +15,11 @@
 #' @param rev_colour Logical. Should the colour palette be reversed? Default is `FALSE`.
 #' @param rev_fill Logical. Should the fill palette be reversed? Default is `FALSE`.
 #' @param fig_dpi Base DPI for figure. Only applicable when Barlow font family (default) is *not* selected.
+#'
+#' @note
+#' If a Google font has not been loaded with the package, `thekids_theme` will load this function on your behalf.
+#'
+#' Supported Google Fonts are those that exist in `sysfonts::font_families_google()`.
 #'
 #' @return A list of ggplot2 theme elements and scale adjustments.
 #'
@@ -37,9 +42,6 @@
 #'
 #' print(p2)
 #' }
-#'
-#' @note If a Google font has not been loaded with the package, `thekids_theme` will load this function on your behalf.
-#'
 #' @export
 
 #thekids_theme <- function(base_size = 11,
@@ -150,6 +152,8 @@ thekids_theme <- function(base_size = 11,
   if (base_family != default_font) {
     showtext::showtext_opts(dpi = fig_dpi)  # Match the Quarto YAML dpi setting
     showtext::showtext_auto()
+
+    message(paste0("Non-default font family (", base_family, ") selected.\nPlease consider changing `fig_dpi` if any issues with plot scaling are encountered."))
   }
 
   # Define color and fill functions
