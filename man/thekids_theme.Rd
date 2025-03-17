@@ -2,9 +2,24 @@
 % Please edit documentation in R/thekids_theme.R
 \name{thekids_theme}
 \alias{thekids_theme}
+\alias{theme_thekids}
 \title{Apply Institute Theme to ggplot2 Plots}
 \usage{
 thekids_theme(
+  base_size = 11,
+  base_family = NULL,
+  base_line_size = base_size/22,
+  base_rect_size = base_size/22,
+  scale_colour_type = "discrete",
+  scale_fill_type = "discrete",
+  colour_theme = "viridis",
+  fill_theme = "viridis",
+  rev_colour = FALSE,
+  rev_fill = FALSE,
+  fig_dpi = 300
+)
+
+theme_thekids(
   base_size = 11,
   base_family = NULL,
   base_line_size = base_size/22,
@@ -71,6 +86,24 @@ print(p)
 p2 <- ggplot(mtcars, aes(x = factor(cyl), y = wt, fill = factor(cyl))) +
   geom_col() +
   thekids_theme(fill_theme = "thekids_tint", rev_fill = T)
+
+print(p2)
+}
+\dontrun{
+# Install the required fonts first (see below)
+# Example usage with ggplot2
+library(ggplot2)
+library(viridis)
+
+p <- ggplot(mtcars, aes(x = mpg, y = wt, col = factor(cyl))) +
+  geom_point() +
+  theme_thekids()
+
+print(p)
+
+p2 <- ggplot(mtcars, aes(x = factor(cyl), y = wt, fill = factor(cyl))) +
+  geom_col() +
+  theme_thekids(fill_theme = "thekids_tint", rev_fill = T)
 
 print(p2)
 }
