@@ -44,82 +44,6 @@
 #' }
 #' @export
 
-#thekids_theme <- function(base_size = 11,
-#                          base_family = NULL,
-#                          base_line_size = base_size / 22,
-#                          base_rect_size = base_size / 22,
-#                          scale_colour_type = "discrete",
-#                          scale_fill_type = "discrete",
-#                          colour_theme = "viridis",
-#                          fill_theme = "viridis",
-#                          rev_colour = FALSE,
-#                          rev_fill = FALSE) {
-#
-#  # Default font from options
-#  default_font <- getOption("thekidsbiostats.font", "Barlow")
-#
-#  # Use default font if base_family is not provided
-#  base_family <- base_family %||% default_font
-#
-#  # Ensure the font is available before applying it
-#  available_fonts <- sysfonts::font_families_google()
-#
-#  if (!base_family %in% available_fonts) {
-#    warning("Font not found in Google Fonts. Using default: ", default_font)
-#    base_family <- default_font
-#  }
-#
-#  # Register font if it hasn't been added
-#  if (!base_family %in% sysfonts::font_families()) {
-#    tryCatch({
-#      sysfonts::font_add_google(base_family, base_family)
-#      showtext::showtext_auto()
-#    }, error = function(e) {
-#      warning("Could not add Google Font: ", base_family, ". Default system font will be used.")
-#    })
-#  }
-#
-#  # Define color and fill functions
-#  colour_function <- switch(
-#    colour_theme,
-#    "viridis" = if (scale_colour_type == "discrete") {
-#      scale_colour_viridis_d(option = "plasma", end = 0.85)
-#    } else {
-#      scale_colour_viridis_c(option = "plasma", end = 0.85)
-#    },
-#    "thekids" = scale_color_thekids(palette = "primary", reverse = rev_colour),
-#    "thekids_tint" = scale_color_thekids(palette = "tint50", reverse = rev_colour),
-#    "thekids_grey" = scale_color_thekids(palette = "typography", reverse = rev_colour),
-#    NULL
-#  )
-#
-#  fill_function <- switch(
-#    fill_theme,
-#    "viridis" = if (scale_fill_type == "discrete") {
-#      scale_fill_viridis_d(option = "plasma", end = 0.85)
-#    } else {
-#      scale_fill_viridis_c(option = "plasma", end = 0.85)
-#    },
-#    "thekids" = scale_fill_thekids(palette = "primary", reverse = rev_fill),
-#    "thekids_tint" = scale_fill_thekids(palette = "tint50", reverse = rev_fill),
-#    "thekids_grey" = scale_fill_thekids(palette = "typography", reverse = rev_fill),
-#    NULL
-#  )
-#
-#  # Return the theme with optional color and fill functions
-#  theme_minimal(base_family = base_family, base_size = base_size,
-#                base_line_size = base_line_size, base_rect_size = base_rect_size) +
-#    theme(
-#      panel.grid.minor = element_blank(),
-#      plot.title = element_text(family = base_family, face = "bold"),
-#      axis.title = element_text(family = base_family, face = "bold"),
-#      strip.text = element_text(family = base_family, face = "bold", size = rel(1), hjust = 0),
-#      plot.background = element_rect(fill = "white", colour = "white"),
-#      strip.background = element_rect(fill = "grey80", colour = NA)
-#    ) +
-#    if (!is.null(colour_function)) colour_function else NULL +
-#    if (!is.null(fill_function)) fill_function else NULL
-#}
 thekids_theme <- function(base_size = 11,
                           base_family = NULL,
                           base_line_size = base_size / 22,
@@ -200,6 +124,28 @@ thekids_theme <- function(base_size = 11,
   )
 }
 
+#' @rdname thekids_theme
+#' @examples
+#' \dontrun{
+#' # Install the required fonts first (see below)
+#' # Example usage with ggplot2
+#' library(ggplot2)
+#' library(viridis)
+#'
+#' p <- ggplot(mtcars, aes(x = mpg, y = wt, col = factor(cyl))) +
+#'   geom_point() +
+#'   theme_thekids()
+#'
+#' print(p)
+#'
+#' p2 <- ggplot(mtcars, aes(x = factor(cyl), y = wt, fill = factor(cyl))) +
+#'   geom_col() +
+#'   theme_thekids(fill_theme = "thekids_tint", rev_fill = T)
+#'
+#' print(p2)
+#' }
+#' @export
+theme_thekids <- thekids_theme
 
 
 #' Apply Institute Theme to ggplot2 Plots
