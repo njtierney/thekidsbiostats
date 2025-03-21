@@ -120,3 +120,5 @@ insert_margin <- function() {
   viewer <- shiny::dialogViewer("Insert Callout", width = 300, height = 250)
   shiny::runGadget(shinyApp(ui, server), viewer = viewer)
 }
+
+
