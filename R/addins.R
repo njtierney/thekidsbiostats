@@ -121,4 +121,48 @@ insert_margin <- function() {
   shiny::runGadget(shinyApp(ui, server), viewer = viewer)
 }
 
+#' RStudio Addin: Insert Model Output Tabs in Quarto
+#'
+#' @return This function is called for its side effect: inserting text into the active RStudio document.
+#' @export
+#'
+#' @import shiny rstudioapi
+#' @examples
+#' \dontrun{
+#' insert_model_tabset()
+#' }
+insert_model_tabset <- function() {
+  ui <- fluidPage(
+    titlePanel("Insert Model Output Tabs"),
+
+    textInput("modobj", "Model object name", value = "mod"),
+
+    checkboxGroupInput("tabs", "Select tabs to include:",
+                       choices = c("Desc stats", "Desc Plot", "Model diag", "Model output"),
+                       selected = c("Desc stats", "Desc Plot", "Model diag", "Model output")
+    ),
+
+    checkboxInput("include_help", "Include dropdown explanations", value = TRUE),
+
+    actionButton("insert", "Insert tabset into document")
+  )
+
+  server <- function(input, output, session) {
+    observeEvent(input$insert, {
+      tab_text <- generate_tabset_code(
+        mod_name = input$modobj,
+        tabs = input$tabs,
+        include_help = input$include_help
+      )
+      if (rstudioapi::isAvailable()) {
+        rstudioapi::insertText(tab_text)
+        stopApp()
+      }
+    })
+  }
+
+  viewer <- shiny::dialogViewer("Insert Model Tabs", width = 500, height = 450)
+  shiny::runGadget(shinyApp(ui, server), viewer = viewer)
+}
+
 

@@ -76,6 +76,11 @@ Tables, explanatory plots, etc to examine the data prior to analysis.
 
 ## Analysis
 
+```{r}
+mod <- thekidsbiostats::thekids_model(mtcars, y = "mpg", x = "cyl")
+```
+
+
 ## Supplementary Material
 
 
