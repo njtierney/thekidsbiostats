@@ -211,21 +211,21 @@ generate_tabset_code <- function(mod_name, tabs, include_help = TRUE) {
 
   tab_blocks <- list()
 
-  if ("Desc stats" %in% tabs) {
+  if ("Descriptive stats" %in% tabs) {
     tab_blocks <- c(tab_blocks, make_tab("Desc stats",
                                          glue::glue('{mod_name}$mod_desc %>% thekids_table(colour = "Saffron", padding = 10)'),
                                          "This section provides descriptive statistics for each variable in the model dataset. If the main predictor is categorical, statistics are presented by group. For continuous predictors, overall means and standard deviations are shown."
     ))
   }
 
-  if ("Desc Plot" %in% tabs) {
-    tab_blocks <- c(tab_blocks, make_tab("Desc Plot",
+  if ("Descriptive plot" %in% tabs) {
+    tab_blocks <- c(tab_blocks, make_tab("Desc plot",
                                          glue::glue('{mod_name}$mod_desc_plot'),
                                          "This plot visualizes the relationship between the outcome variable and the main predictor. For categorical predictors, it displays violin plots with jittered data points and group means. For continuous predictors, it shows a scatterplot with a linear regression trend line. This helps assess the potential linearity and spread of data."
     ))
   }
 
-  if ("Model diag" %in% tabs) {
+  if ("Model diagnostics" %in% tabs) {
     tab_blocks <- c(tab_blocks, make_tab("Model diag",
                                          glue::glue('{mod_name}$mod_diag'),
                                          "This section displays four diagnostic plots, which assess whether your linear model meets its core assumptions:

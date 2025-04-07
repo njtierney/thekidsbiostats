@@ -138,8 +138,8 @@ insert_model_tabset <- function() {
     textInput("modobj", "Model object name", value = "mod"),
 
     checkboxGroupInput("tabs", "Select tabs to include:",
-                       choices = c("Desc stats", "Desc Plot", "Model diag", "Model output"),
-                       selected = c("Desc stats", "Desc Plot", "Model diag", "Model output")
+                       choices = c("Descriptive stats", "Descriptive plot", "Model diagnostics", "Model output"),
+                       selected = c("Descriptive stats", "Descriptive plot", "Model diagnostics", "Model output")
     ),
 
     checkboxInput("include_help", "Include dropdown explanations", value = TRUE),

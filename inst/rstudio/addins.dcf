@@ -8,7 +8,7 @@ Description: Inserts a Quarto margin comment at the current cursor position.
 Binding: insert_margin
 Interactive: true
 
-Name: Insert Model Output Tabs
+Name: Insert Model Panel Tabset
 Description: Insert Quarto tabset for model output with optional explanations
 Binding: insert_model_tabset
 Interactive: true
