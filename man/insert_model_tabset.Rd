@@ -2,18 +2,15 @@
 % Please edit documentation in R/addins.R
 \name{insert_model_tabset}
 \alias{insert_model_tabset}
-\title{RStudio Addin: Insert Model Output Tabs in Quarto}
+\title{RStudio Addin: Insert child Quarto tabset for model output}
 \usage{
 insert_model_tabset()
 }
 \value{
-This function is called for its side effect: inserting text into the active RStudio document.
+Inserts code into the active RStudio document and copies a child QMD file.
 }
 \description{
-RStudio Addin: Insert Model Output Tabs in Quarto
-}
-\examples{
-\dontrun{
-insert_model_tabset()
-}
+This Shiny gadget inserts a \code{model_name <- "mod"} line and a child chunk to include
+a preformatted tabset from an external Quarto file. It also copies the child file
+to the same directory as the currently open document.
 }
