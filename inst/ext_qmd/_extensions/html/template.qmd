@@ -76,6 +76,12 @@ Tables, explanatory plots, etc to examine the data prior to analysis.
 
 ## Analysis
 
+```{r echo = T}
+mod <- thekidsbiostats::thekids_model(mtcars, y = "mpg", x = "cyl")
+```
+
+**Try out the "Insert Model Panel Tabs" addin with the mod object above!**
+
 ## Supplementary Material
 
 

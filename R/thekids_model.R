@@ -84,7 +84,7 @@ thekids_model <- function(data, y, x, formula = "", model = "linear", ...){
   if(model == "quantile") {
     mod <- quantreg::rq(formula = form, data = dat_mod, ...)
   }
-  if(model == "quantile") {
+  if(model == "ordinal") {
     mod <- ordinal::clm(formula = form, data = dat_mod, ...)
   }
 
