@@ -15,8 +15,8 @@
 #'
 #' @return Invisibly returns the project path.
 #' @export
-create_project <- function(path = NULL,
-                           project_name,
+create_project <- function(project_name,
+                           path = NULL,
                            folders = c("data-raw", "data", "admin", "docs", "reports"),
                            ext_name = "html",
                            create_report = FALSE,
@@ -34,20 +34,27 @@ create_project <- function(path = NULL,
 
   proj_dir <- file.path(path, project_name)
   dir.create(proj_dir, recursive = TRUE, showWarnings = FALSE)
+  message("📁 Project directory created: ", proj_dir)
 
   for (folder in folders) {
-    dir.create(file.path(proj_dir, folder), showWarnings = FALSE)
+    subdir <- file.path(proj_dir, folder)
+    dir.create(subdir, showWarnings = FALSE)
+    message("📂 Folder created: ", folder)
   }
 
   rproj_file <- file.path(proj_dir, paste0(project_name, ".Rproj"))
   if (create_rproj) {
     writeLines("Version: 1.0", con = rproj_file)
+    message("📄 .Rproj file created: ", basename(rproj_file))
   }
 
   qmd_file <- NULL
   if (create_report) {
     report_dir <- file.path(proj_dir, "reports")
-    if (!dir.exists(report_dir)) dir.create(report_dir)
+    if (!dir.exists(report_dir)) {
+      dir.create(report_dir)
+      message("📂 Report folder created: reports/")
+    }
     qmd_file <- create_template(
       file_name = "report",
       directory = report_dir,
@@ -58,18 +65,19 @@ create_project <- function(path = NULL,
   }
 
   if (open_project && file.exists(rproj_file) && rstudioapi::isAvailable()) {
+    message("🚀 Opening project in new RStudio session...")
     rstudioapi::openProject(path = rproj_file, newSession = TRUE)
 
     if (!is.null(qmd_file) && file.exists(qmd_file)) {
-      # Add optional .Rprofile behavior if needed
       options(thekidsbiostats.qmd_to_open = normalizePath(qmd_file))
     }
   }
 
-  if (close_current && rstudioapi::isAvailable()) {
-    rstudioapi::executeCommand("quit")
+  if (close_current) {
+    message("🔒 Closing current R session...")
+    callr::r_bg(function() { Sys.sleep(1); q("ask") })
   }
 
-  message("✅ Project created at ", proj_dir)
+  message("✅ Project setup complete!")
   invisible(proj_dir)
 }

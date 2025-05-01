@@ -138,7 +138,6 @@ create_project_addin <- function() {
         ),
 
         checkboxInput("open_project", "Open new project", TRUE),
-        checkboxInput("close_current", "Close current session", FALSE),
 
         actionButton("create", "Create Project", class = "btn-primary")
       ),
@@ -172,8 +171,7 @@ create_project_addin <- function() {
           folders = input$folders,
           create_report = isTRUE(input$create_report),
           ext_name = input$ext_name,
-          open_project = isTRUE(input$open_project),
-          close_current = isTRUE(input$close_current)
+          open_project = isTRUE(input$open_project)
         )
 
         output$status <- renderText("✅ Project created successfully.")
@@ -181,6 +179,8 @@ create_project_addin <- function() {
       }, error = function(e) {
         showModal(modalDialog("Error", e$message, easyClose = TRUE))
       })
+
+      stopApp()
     })
   }
 
@@ -244,6 +244,7 @@ create_template_addin <- function() {
       }, error = function(e) {
         showModal(modalDialog("Error", e$message, easyClose = TRUE))
       })
+      stopApp()
     })
   }
 

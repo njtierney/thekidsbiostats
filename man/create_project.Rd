@@ -5,8 +5,8 @@
 \title{Create a new project structure}
 \usage{
 create_project(
-  path = NULL,
   project_name,
+  path = NULL,
   folders = c("data-raw", "data", "admin", "docs", "reports"),
   ext_name = "html",
   create_report = FALSE,
@@ -17,9 +17,9 @@ create_project(
 )
 }
 \arguments{
-\item{path}{Parent directory for the project. If NULL, prompts the user.}
-
 \item{project_name}{Name of the new project folder.}
+
+\item{path}{Parent directory for the project. If NULL, prompts the user.}
 
 \item{folders}{Character vector of subfolders to create.}
 

@@ -20,7 +20,10 @@ create_template(
 
 \item{open_file}{Whether to open the file after creation.}
 }
+\value{
+Invisibly returns path to created .qmd file, or NULL if skipped.
+}
 \description{
 Copies extension files into \verb{_extensions/} and creates a \code{.qmd} report file.
-Optionally opens the created file.
+Optionally opens the created file. If the file already exists, no overwrite occurs and a warning is shown.
 }
