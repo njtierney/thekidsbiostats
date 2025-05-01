@@ -2,10 +2,10 @@
 % Please edit documentation in R/addins.R
 \name{create_project_addin}
 \alias{create_project_addin}
-\title{Shiny Addin for Creating a Project}
+\title{Shiny Addin: Create New Project}
 \usage{
 create_project_addin()
 }
 \description{
-This function launches a Shiny app to create a project structure interactively.
+Launches a Shiny app to create a project with folders, report, and control over session state.
 }

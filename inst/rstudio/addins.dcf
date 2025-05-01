@@ -6,12 +6,18 @@ Interactive: true
 Name: Insert Margin Comment
 Description: Inserts a Quarto margin comment at the current cursor position.
 Binding: insert_margin
-Interactive: true
+Interactive: false
 
-Name: Create Project (Shiny)
-Description: Launch a Shiny app to create a new project with a structured directory.
+Name: Create New Project
+Description: Launch a Shiny app to create a new project folder and report
 Binding: create_project_addin
 Interactive: true
+
+Name: Create Report Template
+Description: Launch a Shiny app to create a Quarto report template
+Binding: create_template_addin
+Interactive: true
+
 
 Name: Insert Model Panel Tabset
 Description: Insert Quarto tabset for model output with optional explanations

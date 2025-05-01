@@ -1,170 +1,75 @@
-#' Create a New Project Structure with Extension
+#' Create a new project structure
 #'
-#' This function creates a directory structure for a new project based on a specified extension.
-#' It can also create additional folders such as `data_raw`, `data`, `admin`, `reports`, and `docs`.
-#' The function copies specific files and folders from the chosen extension to the project directory.
+#' Creates a new project folder with subfolders, an RProj file, and optional Quarto report.
+#' Can optionally open the project in a new session and close the current one.
 #'
-#' @param project_name A string. The name of the project to create.
-#' @param ext_name A string. The type of project to create. Defaults to `"basic"`. The extension must be available in the package's `ext_proj/_extensions/` directory.
-#' @param data_raw Logical. If `TRUE`, a `data_raw` directory will be created in the project. Defaults to `TRUE`.
-#' @param data Logical. If `TRUE`, a `data` directory will be created in the project. Defaults to `TRUE`.
-#' @param admin Logical. If `TRUE`, an `admin` directory will be created in the project. Defaults to `TRUE`.
-#' @param reports Logical. If `TRUE`, a `reports` directory will be created in the project. Defaults to `TRUE`.
-#' @param docs Logical. If `TRUE`, a `docs` directory will be created in the project. Defaults to `TRUE`.
-#' @param other_folders Vector of strings that contain any other folders that should also be created. Elements should be unique. Default `NULL`.
+#' @param path Parent directory for the project. If NULL, prompts the user.
+#' @param project_name Name of the new project folder.
+#' @param folders Character vector of subfolders to create.
+#' @param ext_name Name of the report extension for `create_template()`.
+#' @param create_report Whether to create a report using `create_template()`.
+#' @param create_rproj Whether to include a .Rproj file.
+#' @param open_project Whether to open the new project in a new RStudio session.
+#' @param close_current Whether to close the current RStudio session.
+#' @param ... Additional arguments passed to `create_template()`.
 #'
-#' @details
-#' This function helps set up the structure of a new project using a predefined extension and
-#' optional additional directories. It ensures that the selected extension is valid by checking
-#' the available extensions from the `thekidsbiostats` package. After creating the necessary folders,
-#' the function copies the appropriate files from the package extension into the project.
-#'
-#' For a more thorough example, see the \href{../doc/project_workflow.html}{vignette}.
-#'
-#' @note
-#' Ensure that the `thekidsbiostats` package is installed and contains the required extension
-#' in `ext_proj/_extensions/`.
-#'
-#' @examples
-#' \dontrun{
-#' create_project(ext_name = "basic")
-#' create_project(ext_name = "targets", data_raw = FALSE, docs = TRUE)
-#' }
-#'
+#' @return Invisibly returns the project path.
 #' @export
-#'
-create_project <- function(project_name,
-                           ext_name = "basic",
-                           data_raw = T,
-                           data = T,
-                           admin = T,
-                           reports = T,
-                           docs = T,
-                           other_folders = NULL) {
+create_project <- function(path = NULL,
+                           project_name,
+                           folders = c("data-raw", "data", "admin", "docs", "reports"),
+                           ext_name = "html",
+                           create_report = FALSE,
+                           create_rproj = TRUE,
+                           open_project = TRUE,
+                           close_current = FALSE,
+                           ...) {
+  if (missing(project_name) || project_name == "") stop("You must provide a project_name.")
 
-  if (length(unique(other_folders)) != length(other_folders)){
-    stop("The `other_folder` values specified are not unique! Project creation cancelled.")
+  if (is.null(path)) {
+    if (!rstudioapi::isAvailable()) stop("Please provide a path or run inside RStudio.")
+    path <- rstudioapi::selectDirectory("Select parent folder for new project")
+    if (is.null(path)) stop("No directory selected.")
   }
 
-  base_dir <- rstudioapi::selectDirectory(caption = "Select a location to create the new project folder")
-              #tcltk::tk_choose.dir(default = getwd(),
-              #                     caption = "Select a location to create the new project folder")
+  proj_dir <- file.path(path, project_name)
+  dir.create(proj_dir, recursive = TRUE, showWarnings = FALSE)
 
-  project_dir <- base_dir
-
-  if (is.na(project_dir) || project_dir == "") {
-    stop("Please select a directory. Project creation cancelled.")
+  for (folder in folders) {
+    dir.create(file.path(proj_dir, folder), showWarnings = FALSE)
   }
 
-  valid_ext <- list.files(system.file("ext_proj/_extensions", package = "thekidsbiostats"))
+  rproj_file <- file.path(proj_dir, paste0(project_name, ".Rproj"))
+  if (create_rproj) {
+    writeLines("Version: 1.0", con = rproj_file)
+  }
 
-  # check for available extensions
-  stopifnot("Extension not in package" = ext_name %in% valid_ext)
+  qmd_file <- NULL
+  if (create_report) {
+    report_dir <- file.path(proj_dir, "reports")
+    if (!dir.exists(report_dir)) dir.create(report_dir)
+    qmd_file <- create_template(
+      file_name = "report",
+      directory = report_dir,
+      ext_name = ext_name,
+      open_file = FALSE,
+      ...
+    )
+  }
 
-  # add home directory
-  dir.create(file.path(project_dir, project_name))
+  if (open_project && file.exists(rproj_file) && rstudioapi::isAvailable()) {
+    rstudioapi::openProject(path = rproj_file, newSession = TRUE)
 
-  # add requested directories
-  if(data_raw) {
-    if(!file.exists(file.path(project_dir, project_name, "data_raw"))) dir.create(file.path(project_dir, project_name, "data_raw"))
-  }
-  if(data) {
-    if(!file.exists(file.path(project_dir, project_name, "data"))) dir.create(file.path(project_dir, project_name, "data"))
-  }
-  if(admin) {
-    if(!file.exists(file.path(project_dir, project_name, "admin"))) dir.create(file.path(project_dir, project_name, "admin"))
-  }
-  if(reports) {
-    if(!file.exists(file.path(project_dir, project_name, "reports"))) dir.create(file.path(project_dir, project_name, "reports"))
-  }
-  if(docs) {
-    if(!file.exists(file.path(project_dir, project_name, "docs"))) dir.create(file.path(project_dir, project_name, "docs"))
-  }
-  if (!is.null(other_folders)){
-    for (i in other_folders){
-      if (!file.exists(file.path(project_dir, project_name, i))) dir.create(file.path(project_dir, project_name, i))
+    if (!is.null(qmd_file) && file.exists(qmd_file)) {
+      # Add optional .Rprofile behavior if needed
+      options(thekidsbiostats.qmd_to_open = normalizePath(qmd_file))
     }
   }
 
-  # Create the R Project file in the selected directory
-  rproj_file <- file.path(project_dir, project_name, paste0(project_name, ".Rproj"))
-  rproj_contents <- c("Version: 1.0") # Required
+  if (close_current && rstudioapi::isAvailable()) {
+    rstudioapi::executeCommand("quit")
+  }
 
-  writeLines(rproj_contents, rproj_file)
-
-  message("Project structure and RProject file created at: ", paste0(project_dir, "/", project_name))
-
-  # copy specific files and folders from extension
-  files <- list.files(system.file(paste0("ext_proj/_extensions/", ext_name), package = "thekidsbiostats"))
-  file.copy(
-    from = system.file(paste0("ext_proj/_extensions/", ext_name, "/", files), package = "thekidsbiostats"),
-    to = file.path(project_dir, project_name),
-    overwrite = TRUE,
-    recursive = TRUE,
-    copy.mode = TRUE
-  )
+  message("✅ Project created at ", proj_dir)
+  invisible(proj_dir)
 }
-
-#' Create a New Project Structure with Extension (Shiny Compatible)
-#'
-#' This function creates a directory structure for a new project based on a specified extension.
-#' It allows specifying a directory instead of prompting the user.
-#'
-#' @param path A string. The directory where the project will be created.
-#' @param project_name A string. The name of the project to create.
-#' @param ext_name A string. The type of project to create. Defaults to `"basic"`.
-#' @param data_raw Logical. If `TRUE`, a `data_raw` directory will be created. Defaults to `TRUE`.
-#' @param data Logical. If `TRUE`, a `data` directory will be created. Defaults to `TRUE`.
-#' @param admin Logical. If `TRUE`, an `admin` directory will be created. Defaults to `TRUE`.
-#' @param reports Logical. If `TRUE`, a `reports` directory will be created. Defaults to `TRUE`.
-#' @param docs Logical. If `TRUE`, a `docs` directory will be created. Defaults to `TRUE`.
-#'
-#' @export
-create_project_shiny <- function(path,
-                                 project_name,
-                                 ext_name = "basic",
-                                 data_raw = TRUE,
-                                 data = TRUE,
-                                 admin = TRUE,
-                                 reports = TRUE,
-                                 docs = TRUE) {
-  if (!dir.exists(path)) {
-    stop("The specified directory does not exist.")
-  }
-
-  project_dir <- file.path(path, project_name)
-
-  if (dir.exists(project_dir)) {
-    stop("Project directory already exists. Choose a different name.")
-  }
-
-  valid_ext <- list.files(system.file("ext_proj/_extensions", package = "thekidsbiostats"))
-
-  if (!(ext_name %in% valid_ext)) {
-    stop("Selected extension is not available in the package.")
-  }
-
-  dir.create(project_dir, recursive = TRUE, showWarnings = FALSE)
-
-  sub_dirs <- c("data_raw" = data_raw, "data" = data, "admin" = admin, "reports" = reports, "docs" = docs)
-
-  for (dir_name in names(sub_dirs)) {
-    if (sub_dirs[[dir_name]]) {
-      dir.create(file.path(project_dir, dir_name), showWarnings = FALSE)
-    }
-  }
-
-  rproj_file <- file.path(project_dir, paste0(project_name, ".Rproj"))
-  writeLines("Version: 1.0", rproj_file)
-
-  message("Project structure and RProject file created at: ", project_dir)
-
-  ext_path <- system.file(paste0("ext_proj/_extensions/", ext_name), package = "thekidsbiostats")
-  files <- list.files(ext_path, full.names = TRUE)
-
-  file.copy(from = files, to = project_dir, overwrite = TRUE, recursive = TRUE)
-
-  message("Files copied from extension: ", ext_name)
-}
-
-
