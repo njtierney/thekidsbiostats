@@ -16,67 +16,74 @@
 #'   insert_callout()
 #' }
 insert_callout <- function() {
-  library(shiny)
-  library(shinyFiles)
+
+  # Custom color map
+  color_map <- c(
+    "note"      = "#a1b7d4",
+    "tip"       = "#80D1CE",
+    "important" = "#FAB580",
+    "warning"   = "#F8DA9A"
+  )
+
+  # Helper to generate a button for a given type
+  callout_button <- function(id, label, color) {
+    actionButton(
+      inputId = id,
+      label = label,
+      class = "btn-callout",
+      style = paste0("background-color:", color, ";")
+    )
+  }
 
   ui <- fluidPage(
+    tags$head(
+      tags$style(HTML("
+        .btn-callout {
+          width: 100%;
+          font-weight: bold;
+          margin-bottom: 10px;
+          font-size: 16px;
+          border: none;
+        }
+      "))
+    ),
     titlePanel("Insert Callout"),
-
-    # Selection input
-    selectInput("select", "Choose a callout option:",
-                choices = c("note", "tip", "important", "warning")),
-
-    # Text input area
-    textAreaInput("text_input", "Enter callout text:",
-                  value = "",
-                  placeholder = "Type your callout content here...",
-                  width = "100%", height = "100px"),
-
-    # Color display
-    uiOutput("color_box"),
-
-    # Action button to insert text
-    actionButton("insert", "Insert at cursor")
+    fluidRow(
+      column(12,
+             callout_button("note",      "Note",      color_map["note"]),
+             callout_button("warning",   "Warning",   color_map["warning"]),
+             callout_button("important", "Important", color_map["important"]),
+             callout_button("tip",       "Tip",       color_map["tip"])
+      )
+    )
   )
 
   server <- function(input, output, session) {
-    # Mapping values to colors and text
-    color_map <- c("note" = "#a1b7d4",
-                   "tip" = "#80D1CE",
-                   "important" = "#FAB580",
-                   "warning" = "#F8DA9A")
 
-    # Render color box
-    output$color_box <- renderUI({
-      req(input$select)  # Ensure input is valid before proceeding
-      div(style = paste("background-color:", color_map[input$select],
-                        "; height: 30px; width: 80px; border: 1px solid black;"))
+    observeEvent(input$note, {
+      rstudioapi::insertText("::: {.callout-note}\n<Insert text here>\n:::\n")
+      stopApp()
     })
 
-    # Insert mapped text at the cursor position in RStudio
-    observeEvent(input$insert, {
-      req(input$select)  # Ensure input is valid before inserting
+    observeEvent(input$warning, {
+      rstudioapi::insertText("::: {.callout-warning}\n<Insert text here>\n:::\n")
+      stopApp()
+    })
 
-      # Use default text if input is empty
-      callout_text <- ifelse(nchar(input$text_input) > 0, input$text_input, "Your content here.")
+    observeEvent(input$important, {
+      rstudioapi::insertText("::: {.callout-important}\n<Insert text here>\n:::\n")
+      stopApp()
+    })
 
-      if (rstudioapi::isAvailable()) {
-        rstudioapi::insertText(
-          glue::glue("
-::: {{.callout-{input$select}}}
-{callout_text}
-:::
-")
-        )
-      }
+    observeEvent(input$tip, {
+      rstudioapi::insertText("::: {.callout-tip}\n<Insert text here>\n:::\n")
+      stopApp()
     })
   }
 
-  # Set window size using dialogViewer
-  viewer <- shiny::dialogViewer("Insert Callout", width = 300, height = 250)
-  shiny::runGadget(shinyApp(ui, server), viewer = viewer)
+  viewer <- dialogViewer("Insert Callout", width = 250, height = 250)
+  runGadget(ui, server, viewer = viewer)
 }
-
 
 #' Insert Callout via RStudio Addin
 #'
