@@ -12,12 +12,12 @@
 #' @import shiny
 #'
 #' @examples
+#' \dontrun{
 #' if (interactive()) {
 #'   insert_callout()
 #' }
+#' }
 insert_callout <- function() {
-
-  # Custom color map
   color_map <- c(
     "note"      = "#a1b7d4",
     "tip"       = "#80D1CE",
@@ -25,9 +25,8 @@ insert_callout <- function() {
     "warning"   = "#F8DA9A"
   )
 
-  # Helper to generate a button for a given type
   callout_button <- function(id, label, color) {
-    actionButton(
+    shiny::actionButton(
       inputId = id,
       label = label,
       class = "btn-callout",
@@ -35,54 +34,42 @@ insert_callout <- function() {
     )
   }
 
-  ui <- fluidPage(
-    tags$head(
-      tags$style(HTML("
-        .btn-callout {
-          width: 100%;
-          font-weight: bold;
-          margin-bottom: 10px;
-          font-size: 16px;
-          border: none;
-        }
-      "))
+  ui <- shiny::fluidPage(
+    shiny::tags$head(
+      shiny::tags$style(shiny::HTML(".btn-callout { width: 100%; font-weight: bold; margin-bottom: 10px; font-size: 16px; border: none; }"))
     ),
-    titlePanel("Insert Callout"),
-    fluidRow(
-      column(12,
-             callout_button("note",      "Note",      color_map["note"]),
-             callout_button("warning",   "Warning",   color_map["warning"]),
-             callout_button("important", "Important", color_map["important"]),
-             callout_button("tip",       "Tip",       color_map["tip"])
+    shiny::titlePanel("Insert Callout"),
+    shiny::fluidRow(
+      shiny::column(12,
+        callout_button("note",      "Note",      color_map["note"]),
+        callout_button("warning",   "Warning",   color_map["warning"]),
+        callout_button("important", "Important", color_map["important"]),
+        callout_button("tip",       "Tip",       color_map["tip"])
       )
     )
   )
 
   server <- function(input, output, session) {
-
-    observeEvent(input$note, {
+    shiny::observeEvent(input$note, {
       rstudioapi::insertText("::: {.callout-note}\n<your text>\n:::\n")
-      stopApp()
+      shiny::stopApp()
     })
-
-    observeEvent(input$warning, {
+    shiny::observeEvent(input$warning, {
       rstudioapi::insertText("::: {.callout-warning}\n<your text>\n:::\n")
-      stopApp()
+      shiny::stopApp()
     })
-
-    observeEvent(input$important, {
+    shiny::observeEvent(input$important, {
       rstudioapi::insertText("::: {.callout-important}\n<your text>\n:::\n")
-      stopApp()
+      shiny::stopApp()
     })
-
-    observeEvent(input$tip, {
+    shiny::observeEvent(input$tip, {
       rstudioapi::insertText("::: {.callout-tip}\n<your text>\n:::\n")
-      stopApp()
+      shiny::stopApp()
     })
   }
 
-  viewer <- dialogViewer("Insert Callout", width = 250, height = 250)
-  runGadget(ui, server, viewer = viewer)
+  viewer <- shiny::dialogViewer("Insert Callout", width = 250, height = 250)
+  shiny::runGadget(ui, server, viewer = viewer)
 }
 
 #' Insert Callout via RStudio Addin
@@ -112,8 +99,10 @@ insert_callout_2 <- function() {
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' if (interactive()) {
 #'   insert_margin()
+#' }
 #' }
 insert_margin <- function() {
   if (rstudioapi::isAvailable()) {
@@ -125,62 +114,58 @@ insert_margin <- function() {
   }
 }
 
-
-
 #' Shiny Addin: Create New Project
 #'
 #' Launches a Shiny app to create a project with folders, report, and control over session state.
 #'
 #' @export
 create_project_addin <- function() {
-  library(shiny)
+ 
+  ui <- shiny::fluidPage(
+    shiny::titlePanel("Create a New Project"),
+    
+    shiny::sidebarLayout(
+      shiny::sidebarPanel(
+        shiny::textInput("project_name", "Project Name:", ""),
+        shiny::actionButton("browse", "Browse Parent Directory"),
+        shiny::textOutput("selected_dir"),
 
-  ui <- fluidPage(
-    titlePanel("Create a New Project"),
+        shiny::checkboxGroupInput("folders", "Folders to Include:",
+          choices = c("data-raw", "data", "admin", "docs", "reports"),
+          selected = c("data-raw", "data", "admin", "docs", "reports")),
 
-    sidebarLayout(
-      sidebarPanel(
-        textInput("project_name", "Project Name:", ""),
-        actionButton("browse", "Browse Parent Directory"),
-        textOutput("selected_dir"),
-
-        checkboxGroupInput("folders", "Folders to Include:",
-                           choices = c("data-raw", "data", "admin", "docs", "reports"),
-                           selected = c("data-raw", "data", "admin", "docs", "reports")),
-
-        checkboxInput("create_report", "Create report in reports folder?", FALSE),
-        conditionalPanel(
+        shiny::checkboxInput("create_report", "Create report in reports folder?", FALSE),
+        shiny::conditionalPanel(
           condition = "input.create_report == true",
-          selectInput("ext_name", "Report Type:",
-                      choices = list.files(system.file("ext_qmd/_extensions", package = "thekidsbiostats")),
-                      selected = "html")
+          shiny::selectInput("ext_name", "Report Type:",
+            choices = list.files(system.file("ext_qmd/_extensions", package = "thekidsbiostats")),
+            selected = "html")
         ),
 
-        checkboxInput("open_project", "Open new project", TRUE),
-
-        actionButton("create", "Create Project", class = "btn-primary")
+        shiny::checkboxInput("open_project", "Open new project", TRUE),
+        shiny::actionButton("create", "Create Project", class = "btn-primary")
       ),
 
-      mainPanel(
-        verbatimTextOutput("status")
+      shiny::mainPanel(
+        shiny::verbatimTextOutput("status")
       )
     )
   )
 
   server <- function(input, output, session) {
-    project_path <- reactiveVal(NULL)
+    project_path <- shiny::reactiveVal(NULL)
 
-    observeEvent(input$browse, {
+    shiny::observeEvent(input$browse, {
       selected <- rstudioapi::selectDirectory("Choose folder")
       if (!is.null(selected)) project_path(selected)
     })
 
-    output$selected_dir <- renderText({
+    output$selected_dir <- shiny::renderText({
       req(project_path())
       paste("Selected Directory:", project_path())
     })
 
-    observeEvent(input$create, {
+    shiny::observeEvent(input$create, {
       req(project_path(), input$project_name)
 
       tryCatch({
@@ -193,17 +178,15 @@ create_project_addin <- function() {
           open_project = isTRUE(input$open_project)
         )
 
-        output$status <- renderText("✅ Project created successfully.")
-
+        output$status <- shiny::renderText("✅ Project created successfully.")
       }, error = function(e) {
-        showModal(modalDialog("Error", e$message, easyClose = TRUE))
+        shiny::showModal(shiny::modalDialog("Error", e$message, easyClose = TRUE))
       })
-
-      stopApp()
+      shiny::stopApp()
     })
   }
 
-  shinyApp(ui, server)
+  shiny::shinyApp(ui, server)
 }
 
 
@@ -213,41 +196,40 @@ create_project_addin <- function() {
 #'
 #' @export
 create_template_addin <- function() {
-  library(shiny)
-
-  ui <- fluidPage(
-    titlePanel("Create Report Template"),
-
-    sidebarLayout(
-      sidebarPanel(
-        textInput("file_name", "Report File Name:", value = "report"),
-        selectInput("ext_name", "Report Type:",
-                    choices = list.files(system.file("ext_qmd/_extensions", package = "thekidsbiostats")),
-                    selected = "html"),
-        actionButton("browse", "Browse Output Folder"),
-        textOutput("selected_dir"),
-        actionButton("create", "Create Template", class = "btn-success")
+  
+  ui <- shiny::fluidPage(
+    shiny::titlePanel("Create Report Template"),
+    
+    shiny::sidebarLayout(
+      shiny::sidebarPanel(
+        shiny::textInput("file_name", "Report File Name:", value = "report"),
+        shiny::selectInput("ext_name", "Report Type:",
+          choices = list.files(system.file("ext_qmd/_extensions", package = "thekidsbiostats")),
+          selected = "html"),
+        shiny::actionButton("browse", "Browse Output Folder"),
+        shiny::textOutput("selected_dir"),
+        shiny::actionButton("create", "Create Template", class = "btn-success")
       ),
-      mainPanel(
-        verbatimTextOutput("status")
+      shiny::mainPanel(
+        shiny::verbatimTextOutput("status")
       )
     )
   )
 
   server <- function(input, output, session) {
-    output_path <- reactiveVal(NULL)
+    output_path <- shiny::reactiveVal(NULL)
 
-    observeEvent(input$browse, {
+    shiny::observeEvent(input$browse, {
       selected <- rstudioapi::selectDirectory("Choose target directory")
       if (!is.null(selected)) output_path(selected)
     })
 
-    output$selected_dir <- renderText({
+    output$selected_dir <- shiny::renderText({
       req(output_path())
       paste("Selected Directory:", output_path())
     })
 
-    observeEvent(input$create, {
+    shiny::observeEvent(input$create, {
       req(input$file_name, output_path())
 
       tryCatch({
@@ -257,19 +239,16 @@ create_template_addin <- function() {
           ext_name = input$ext_name,
           open_file = TRUE
         )
-
-        output$status <- renderText("✅ Report template created successfully.")
-
+        output$status <- shiny::renderText("✅ Report template created successfully.")
       }, error = function(e) {
-        showModal(modalDialog("Error", e$message, easyClose = TRUE))
+        shiny::showModal(shiny::modalDialog("Error", e$message, easyClose = TRUE))
       })
-      stopA
+      shiny::stopApp()
     })
   }
 
-  shinyApp(ui, server)
+  shiny::shinyApp(ui, server)
 }
-
 
 
 #' RStudio Addin: Insert child Quarto tabset for model output
@@ -283,23 +262,23 @@ create_template_addin <- function() {
 #'
 #' @import shiny rstudioapi fs glue
 insert_model_tabset <- function() {
-  ui <- fluidPage(
-    titlePanel("Insert Model Output Tabs"),
+  ui <- shiny::fluidPage(
+    shiny::titlePanel("Insert Model Output Tabs"),
 
-    textInput("modobj", "Model object name", value = "mod"),
+    shiny::textInput("modobj", "Model object name", value = "mod"),
 
-    actionButton("insert", "Insert into document")
+    shiny::actionButton("insert", "Insert into document")
   )
 
   server <- function(input, output, session) {
-    observeEvent(input$insert, {
+    shiny::observeEvent(input$insert, {
       model_name_line <- glue::glue('```{{r}}\nmodel_name <- "{input$modobj}"\n```')
       child_chunk <- '{{< include model-tabs-lm.qmd >}}'
 
       # Get active document path and directory
       doc_path <- rstudioapi::getActiveDocumentContext()$path
       if (doc_path == "") {
-        showNotification("No active file open in RStudio", type = "error")
+        shiny::showNotification("No active file open in RStudio", type = "error")
         return()
       }
 
@@ -309,7 +288,7 @@ insert_model_tabset <- function() {
       # Copy template child file
       template_path <- system.file("quarto_templates/model-tabs-lm.qmd", package = "thekidsbiostats")
       if (!fs::file_exists(template_path)) {
-        showNotification("Child template file not found in package.", type = "error")
+        shiny::showNotification("Child template file not found in package.", type = "error")
         return()
       }
       fs::file_copy(template_path, target_path, overwrite = FALSE)

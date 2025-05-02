@@ -13,7 +13,9 @@ None. Inserts text into the active RStudio document.
 Inserts a Quarto column-margin block with placeholder text directly at the cursor.
 }
 \examples{
+\dontrun{
 if (interactive()) {
   insert_margin()
+}
 }
 }

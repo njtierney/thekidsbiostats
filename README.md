@@ -1,5 +1,7 @@
 # thekidsbiostats
 
+![R-CMD-check](https://github.com/The-Kids-Biostats/thekidsbiostats/actions/workflows/R-CMD-check.yaml/badge.svg)
+
 Package with helper functions and formatting templates used by the Biostatistics team of The Kids Research Institute Australia.
 
 All templates and themes in this package use the "Barlow" font family which is not installed by default on many machines. It can be installed here: 
