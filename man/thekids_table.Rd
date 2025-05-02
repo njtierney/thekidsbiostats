@@ -23,11 +23,11 @@ thekids_table(
 
 \item{font.size.header}{the font size for text in the header of the table, defaults to 10}
 
-\item{line.spacing}{line spacing for the table, defaults to 1.5 (passed throught to set_flextable_defaults)}
+\item{line.spacing}{line spacing for the table, defaults to 1.5 (passed through to set_flextable_defaults)}
 
 \item{padding}{padding around all four sides of the text within the cell, defaults to 2.5 (passed throught to set_flextable_defaults)}
 
-\item{colour}{a colour platte from The Kids branding, options include "Saffron", "Pumpkin", "Teal", "DarkTeal", "CelestialBlue", "AzureBlue", "MidnightBlue", or "CoolGrey", defaults to 'CoolGrey'}
+\item{colour}{a colour palette from The Kids branding, options include "Saffron", "Pumpkin", "Teal", "DarkTeal", "CelestialBlue", "AzureBlue", "MidnightBlue", or "CoolGrey", defaults to 'CoolGrey'}
 
 \item{zebra}{puts and alternating 'colour then white' theming onto the table, based on the selected colouring (defaults to \code{F})}
 
