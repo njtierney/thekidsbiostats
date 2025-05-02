@@ -2,7 +2,7 @@
 title: "The Kids Theming"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{The Kids theming}
+  %\VignetteIndexEntry{The Kids Theming}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
