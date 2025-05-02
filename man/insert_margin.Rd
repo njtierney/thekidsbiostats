@@ -15,7 +15,9 @@ The user selects a callout type from a dropdown, sees a preview color, and inser
 callout text into the current script.
 }
 \examples{
+\dontrun{
 if (interactive()) {
   insert_callout()
+}
 }
 }

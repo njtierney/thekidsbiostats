@@ -3,7 +3,7 @@ title: "Project Workflows and Shiny Helpers/addins using `thekidsbiostats`"
 date: "`r format(Sys.time(), '%d %B %Y')`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Creating project workflows using `thekidsbiostats`}
+  %\VignetteIndexEntry{Project Workflows and Shiny Helpers/addins using `thekidsbiostats`}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---

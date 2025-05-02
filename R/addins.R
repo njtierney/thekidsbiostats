@@ -12,31 +12,31 @@
 #' @import shiny
 #'
 #' @examples
+#' \dontrun{
 #' if (interactive()) {
 #'   insert_callout()
 #' }
+#' }
 insert_callout <- function() {
-  library(shiny)
-  library(shinyFiles)
 
-  ui <- fluidPage(
-    titlePanel("Insert Callout"),
+  ui <- shiny::fluidPage(
+    shiny::titlePanel("Insert Callout"),
 
     # Selection input
-    selectInput("select", "Choose a callout option:",
+    shiny::selectInput("select", "Choose a callout option:",
                 choices = c("note", "tip", "important", "warning")),
 
     # Text input area
-    textAreaInput("text_input", "Enter callout text:",
+    shiny::textAreaInput("text_input", "Enter callout text:",
                   value = "",
                   placeholder = "Type your callout content here...",
                   width = "100%", height = "100px"),
 
     # Color display
-    uiOutput("color_box"),
+    shiny::uiOutput("color_box"),
 
     # Action button to insert text
-    actionButton("insert", "Insert at cursor")
+    shiny::actionButton("insert", "Insert at cursor")
   )
 
   server <- function(input, output, session) {
@@ -54,7 +54,7 @@ insert_callout <- function() {
     })
 
     # Insert mapped text at the cursor position in RStudio
-    observeEvent(input$insert, {
+    shiny::observeEvent(input$insert, {
       req(input$select)  # Ensure input is valid before inserting
 
       # Use default text if input is empty
@@ -90,26 +90,28 @@ insert_callout <- function() {
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' if (interactive()) {
 #'   insert_callout()
 #' }
+#' }
 insert_margin <- function() {
-  ui <- fluidPage(
-    titlePanel("Insert Margin Comment"),
+  ui <- shiny::fluidPage(
+    shiny::titlePanel("Insert Margin Comment"),
 
     # Text input area
-    textAreaInput("text_input", "Enter margin text:",
+    shiny::textAreaInput("text_input", "Enter margin text:",
                   value = "",
                   placeholder = "Type your callout content here...",
                   width = "100%", height = "100px"),
 
     # Action button to insert text
-    actionButton("insert", "Insert at cursor")
+    shiny::actionButton("insert", "Insert at cursor")
   )
 
   server <- function(input, output, session) {
     # Insert mapped text at the cursor position in RStudio
-    observeEvent(input$insert, {
+    shiny::observeEvent(input$insert, {
       # Use default text if input is empty
       margin_text <- ifelse(nchar(input$text_input) > 0, input$text_input, "Your content here.")
 
@@ -137,48 +139,46 @@ insert_margin <- function() {
 #' @import shiny shinyFiles
 #' @export
 create_project_addin <- function() {
-  library(shiny)
-  library(shinyFiles)
 
-  ui <- fluidPage(
-    titlePanel("Create a New Project"),
-    sidebarLayout(
-      sidebarPanel(
-        textInput("project_name", "Project Name:", ""),
-        actionButton("browse", "Browse Directory"),
-        textOutput("selected_dir"),   # Displays chosen directory
-        selectInput("ext_name", "Project Type:", choices = list.files(system.file("ext_proj/_extensions", package = "thekidsbiostats"))),
-        checkboxInput("data_raw", "Include data_raw folder", TRUE),
-        checkboxInput("data", "Include data folder", TRUE),
-        checkboxInput("admin", "Include admin folder", TRUE),
-        checkboxInput("reports", "Include reports folder", TRUE),
-        checkboxInput("docs", "Include docs folder", TRUE),
-        actionButton("create", "Create Project")
+  ui <- shiny::fluidPage(
+    shiny::titlePanel("Create a New Project"),
+    shiny::sidebarLayout(
+      shiny::sidebarPanel(
+        shiny::textInput("project_name", "Project Name:", ""),
+        shiny::actionButton("browse", "Browse Directory"),
+        shiny::textOutput("selected_dir"),   # Displays chosen directory
+        shiny::selectInput("ext_name", "Project Type:", choices = list.files(system.file("ext_proj/_extensions", package = "thekidsbiostats"))),
+        shiny::checkboxInput("data_raw", "Include data_raw folder", TRUE),
+        shiny::checkboxInput("data", "Include data folder", TRUE),
+        shiny::checkboxInput("admin", "Include admin folder", TRUE),
+        shiny::checkboxInput("reports", "Include reports folder", TRUE),
+        shiny::checkboxInput("docs", "Include docs folder", TRUE),
+        shiny::actionButton("create", "Create Project")
       ),
-      mainPanel(
-        verbatimTextOutput("status")
+      shiny::mainPanel(
+        shiny::verbatimTextOutput("status")
       )
     )
   )
 
   server <- function(input, output, session) {
-    project_path <- reactiveVal(NULL)
+    project_path <- shiny::reactiveVal(NULL)
 
-    observeEvent(input$browse, {
+    shiny::observeEvent(input$browse, {
       selected_dir <- rstudioapi::selectDirectory(caption = "Select Project Folder")
       if (!is.null(selected_dir) && selected_dir != "") {
         project_path(selected_dir)
       }
     })
 
-    output$selected_dir <- renderText({
+    output$selected_dir <- shiny::renderText({
       req(project_path())
       paste("Selected Directory:", project_path())
     })
 
-    observeEvent(input$create, {
+    shiny::observeEvent(input$create, {
       if (is.null(project_path()) || input$project_name == "") {
-        showModal(modalDialog("Please select a directory and enter a project name.", easyClose = TRUE))
+        shiny::showModal(shiny::modalDialog("Please select a directory and enter a project name.", easyClose = TRUE))
         return()
       }
 
@@ -193,14 +193,14 @@ create_project_addin <- function() {
           reports = input$reports,
           docs = input$docs
         )
-        output$status <- renderText(paste("Project created successfully at:", file.path(project_path(), input$project_name)))
+        output$status <- shiny::renderText(paste("Project created successfully at:", file.path(project_path(), input$project_name)))
       }, error = function(e) {
-        showModal(modalDialog(title = "Error", e$message, easyClose = TRUE))
+        shiny::showModal(shiny::modalDialog(title = "Error", e$message, easyClose = TRUE))
       })
     })
   }
 
-  shinyApp(ui, server)
+  shiny::shinyApp(ui, server)
 }
 
 
@@ -215,23 +215,23 @@ create_project_addin <- function() {
 #'
 #' @import shiny rstudioapi fs glue
 insert_model_tabset <- function() {
-  ui <- fluidPage(
-    titlePanel("Insert Model Output Tabs"),
+  ui <- shiny::fluidPage(
+    shiny::titlePanel("Insert Model Output Tabs"),
 
-    textInput("modobj", "Model object name", value = "mod"),
+    shiny::textInput("modobj", "Model object name", value = "mod"),
 
-    actionButton("insert", "Insert into document")
+    shiny::actionButton("insert", "Insert into document")
   )
 
   server <- function(input, output, session) {
-    observeEvent(input$insert, {
+    shiny::observeEvent(input$insert, {
       model_name_line <- glue::glue('```{{r}}\nmodel_name <- "{input$modobj}"\n```')
       child_chunk <- '{{< include model-tabs-lm.qmd >}}'
 
       # Get active document path and directory
       doc_path <- rstudioapi::getActiveDocumentContext()$path
       if (doc_path == "") {
-        showNotification("No active file open in RStudio", type = "error")
+        shiny::showNotification("No active file open in RStudio", type = "error")
         return()
       }
 
@@ -241,7 +241,7 @@ insert_model_tabset <- function() {
       # Copy template child file
       template_path <- system.file("quarto_templates/model-tabs-lm.qmd", package = "thekidsbiostats")
       if (!fs::file_exists(template_path)) {
-        showNotification("Child template file not found in package.", type = "error")
+        shiny::showNotification("Child template file not found in package.", type = "error")
         return()
       }
       fs::file_copy(template_path, target_path, overwrite = FALSE)
