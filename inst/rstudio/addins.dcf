@@ -3,14 +3,23 @@ Description: Inserts a Quarto callout at the current cursor position.
 Binding: insert_callout
 Interactive: true
 
+Description: Inserts a Quarto callout at the current cursor position.
+Binding: insert_callout_2
+Interactive: false
+
 Name: Insert Margin Comment
 Description: Inserts a Quarto margin comment at the current cursor position.
 Binding: insert_margin
+Interactive: false
+
+Name: Create New Project
+Description: Launch a Shiny app to create a new project folder and report
+Binding: create_project_addin
 Interactive: true
 
-Name: Create Project (Shiny)
-Description: Launch a Shiny app to create a new project with a structured directory.
-Binding: create_project_addin
+Name: Create Report Template
+Description: Launch a Shiny app to create a Quarto report template
+Binding: create_template_addin
 Interactive: true
 
 Name: Insert Model Panel Tabset

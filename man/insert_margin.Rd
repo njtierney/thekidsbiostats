@@ -2,22 +2,20 @@
 % Please edit documentation in R/addins.R
 \name{insert_margin}
 \alias{insert_margin}
-\title{Insert Callout via RStudio Addin}
+\title{Insert Margin Block at Cursor}
 \usage{
 insert_margin()
 }
 \value{
-A Shiny application that runs within RStudio.
+None. Inserts text into the active RStudio document.
 }
 \description{
-Launches a Shiny app as an RStudio addin to insert a Quarto callout at the cursor position.
-The user selects a callout type from a dropdown, sees a preview color, and inserts formatted
-callout text into the current script.
+Inserts a Quarto column-margin block with placeholder text directly at the cursor.
 }
 \examples{
 \dontrun{
 if (interactive()) {
-  insert_callout()
+  insert_margin()
 }
 }
 }

@@ -18,143 +18,136 @@
 #' }
 #' }
 insert_callout <- function() {
+  color_map <- c(
+    "note"      = "#a1b7d4",
+    "tip"       = "#80D1CE",
+    "important" = "#FAB580",
+    "warning"   = "#F8DA9A"
+  )
+
+  callout_button <- function(id, label, color) {
+    shiny::actionButton(
+      inputId = id,
+      label = label,
+      class = "btn-callout",
+      style = paste0("background-color:", color, ";")
+    )
+  }
 
   ui <- shiny::fluidPage(
+    shiny::tags$head(
+      shiny::tags$style(shiny::HTML(".btn-callout { width: 100%; font-weight: bold; margin-bottom: 10px; font-size: 16px; border: none; }"))
+    ),
     shiny::titlePanel("Insert Callout"),
-
-    # Selection input
-    shiny::selectInput("select", "Choose a callout option:",
-                choices = c("note", "tip", "important", "warning")),
-
-    # Text input area
-    shiny::textAreaInput("text_input", "Enter callout text:",
-                  value = "",
-                  placeholder = "Type your callout content here...",
-                  width = "100%", height = "100px"),
-
-    # Color display
-    shiny::uiOutput("color_box"),
-
-    # Action button to insert text
-    shiny::actionButton("insert", "Insert at cursor")
+    shiny::fluidRow(
+      shiny::column(12,
+        callout_button("note",      "Note",      color_map["note"]),
+        callout_button("warning",   "Warning",   color_map["warning"]),
+        callout_button("important", "Important", color_map["important"]),
+        callout_button("tip",       "Tip",       color_map["tip"])
+      )
+    )
   )
 
   server <- function(input, output, session) {
-    # Mapping values to colors and text
-    color_map <- c("note" = "#a1b7d4",
-                   "tip" = "#80D1CE",
-                   "important" = "#FAB580",
-                   "warning" = "#F8DA9A")
-
-    # Render color box
-    output$color_box <- renderUI({
-      req(input$select)  # Ensure input is valid before proceeding
-      div(style = paste("background-color:", color_map[input$select],
-                        "; height: 30px; width: 80px; border: 1px solid black;"))
+    shiny::observeEvent(input$note, {
+      rstudioapi::insertText("::: {.callout-note}\n<your text>\n:::\n")
+      shiny::stopApp()
     })
-
-    # Insert mapped text at the cursor position in RStudio
-    shiny::observeEvent(input$insert, {
-      req(input$select)  # Ensure input is valid before inserting
-
-      # Use default text if input is empty
-      callout_text <- ifelse(nchar(input$text_input) > 0, input$text_input, "Your content here.")
-
-      if (rstudioapi::isAvailable()) {
-        rstudioapi::insertText(
-          glue::glue("
-::: {{.callout-{input$select}}}
-{callout_text}
-:::
-")
-        )
-      }
+    shiny::observeEvent(input$warning, {
+      rstudioapi::insertText("::: {.callout-warning}\n<your text>\n:::\n")
+      shiny::stopApp()
+    })
+    shiny::observeEvent(input$important, {
+      rstudioapi::insertText("::: {.callout-important}\n<your text>\n:::\n")
+      shiny::stopApp()
+    })
+    shiny::observeEvent(input$tip, {
+      rstudioapi::insertText("::: {.callout-tip}\n<your text>\n:::\n")
+      shiny::stopApp()
     })
   }
 
-  # Set window size using dialogViewer
-  viewer <- shiny::dialogViewer("Insert Callout", width = 300, height = 250)
-  shiny::runGadget(shinyApp(ui, server), viewer = viewer)
+  viewer <- shiny::dialogViewer("Insert Callout", width = 250, height = 250)
+  shiny::runGadget(ui, server, viewer = viewer)
 }
-
 
 #' Insert Callout via RStudio Addin
 #'
-#' Launches a Shiny app as an RStudio addin to insert a Quarto callout at the cursor position.
-#' The user selects a callout type from a dropdown, sees a preview color, and inserts formatted
-#' callout text into the current script.
+#' Inserts a Quarto callout block with placeholder text directly at the cursor.
 #'
-#' @return A Shiny application that runs within RStudio.
+#' @return None. Inserts text into the active RStudio document.
+#' @export
 #'
-#' @import shiny shinyFiles
+#' @examples
+#' \dontrun{
+#' insert_callout()
+#' }
+insert_callout_2 <- function() {
+  if (rstudioapi::isAvailable()) {
+    rstudioapi::insertText(
+      "::: {.callout-tip}\n#options: tip, note, warning, important\n<your text>\n:::\n"
+    )
+  } else {
+    warning("RStudio API is not available.")
+  }
+}
+
+#' Insert Margin Block at Cursor
+#'
+#' Inserts a Quarto column-margin block with placeholder text directly at the cursor.
+#'
+#' @return None. Inserts text into the active RStudio document.
 #' @export
 #'
 #' @examples
 #' \dontrun{
 #' if (interactive()) {
-#'   insert_callout()
+#'   insert_margin()
 #' }
 #' }
 insert_margin <- function() {
-  ui <- shiny::fluidPage(
-    shiny::titlePanel("Insert Margin Comment"),
-
-    # Text input area
-    shiny::textAreaInput("text_input", "Enter margin text:",
-                  value = "",
-                  placeholder = "Type your callout content here...",
-                  width = "100%", height = "100px"),
-
-    # Action button to insert text
-    shiny::actionButton("insert", "Insert at cursor")
-  )
-
-  server <- function(input, output, session) {
-    # Insert mapped text at the cursor position in RStudio
-    shiny::observeEvent(input$insert, {
-      # Use default text if input is empty
-      margin_text <- ifelse(nchar(input$text_input) > 0, input$text_input, "Your content here.")
-
-      if (rstudioapi::isAvailable()) {
-        rstudioapi::insertText(
-          glue::glue("
-::: {{.column-margin}}
-{margin_text}
-:::
-")
-        )
-      }
-    })
+  if (rstudioapi::isAvailable()) {
+    rstudioapi::insertText(
+      "::: {.column-margin}\n<your comment>\n:::\n"
+    )
+  } else {
+    warning("RStudio API is not available.")
   }
-
-  # Set window size using dialogViewer
-  viewer <- shiny::dialogViewer("Insert Callout", width = 300, height = 250)
-  shiny::runGadget(shinyApp(ui, server), viewer = viewer)
 }
 
-#' Shiny Addin for Creating a Project
+#' Shiny Addin: Create New Project
 #'
-#' This function launches a Shiny app to create a project structure interactively.
+#' Launches a Shiny app to create a project with folders, report, and control over session state.
 #'
-#' @import shiny shinyFiles
 #' @export
 create_project_addin <- function() {
 
   ui <- shiny::fluidPage(
     shiny::titlePanel("Create a New Project"),
+
     shiny::sidebarLayout(
       shiny::sidebarPanel(
         shiny::textInput("project_name", "Project Name:", ""),
-        shiny::actionButton("browse", "Browse Directory"),
-        shiny::textOutput("selected_dir"),   # Displays chosen directory
-        shiny::selectInput("ext_name", "Project Type:", choices = list.files(system.file("ext_proj/_extensions", package = "thekidsbiostats"))),
-        shiny::checkboxInput("data_raw", "Include data_raw folder", TRUE),
-        shiny::checkboxInput("data", "Include data folder", TRUE),
-        shiny::checkboxInput("admin", "Include admin folder", TRUE),
-        shiny::checkboxInput("reports", "Include reports folder", TRUE),
-        shiny::checkboxInput("docs", "Include docs folder", TRUE),
-        shiny::actionButton("create", "Create Project")
+        shiny::actionButton("browse", "Browse Parent Directory"),
+        shiny::textOutput("selected_dir"),
+
+        shiny::checkboxGroupInput("folders", "Folders to Include:",
+          choices = c("data-raw", "data", "admin", "docs", "reports"),
+          selected = c("data-raw", "data", "admin", "docs", "reports")),
+
+        shiny::checkboxInput("create_report", "Create report in reports folder?", FALSE),
+        shiny::conditionalPanel(
+          condition = "input.create_report == true",
+          shiny::selectInput("ext_name", "Report Type:",
+            choices = list.files(system.file("ext_qmd/_extensions", package = "thekidsbiostats")),
+            selected = "html")
+        ),
+
+        shiny::checkboxInput("open_project", "Open new project", TRUE),
+        shiny::actionButton("create", "Create Project", class = "btn-primary")
       ),
+
       shiny::mainPanel(
         shiny::verbatimTextOutput("status")
       )
@@ -165,10 +158,8 @@ create_project_addin <- function() {
     project_path <- shiny::reactiveVal(NULL)
 
     shiny::observeEvent(input$browse, {
-      selected_dir <- rstudioapi::selectDirectory(caption = "Select Project Folder")
-      if (!is.null(selected_dir) && selected_dir != "") {
-        project_path(selected_dir)
-      }
+      selected <- rstudioapi::selectDirectory("Choose folder")
+      if (!is.null(selected)) project_path(selected)
     })
 
     output$selected_dir <- shiny::renderText({
@@ -177,26 +168,84 @@ create_project_addin <- function() {
     })
 
     shiny::observeEvent(input$create, {
-      if (is.null(project_path()) || input$project_name == "") {
-        shiny::showModal(shiny::modalDialog("Please select a directory and enter a project name.", easyClose = TRUE))
-        return()
-      }
+      req(project_path(), input$project_name)
 
       tryCatch({
-        create_project_shiny(
+        create_project(
           path = project_path(),
           project_name = input$project_name,
+          folders = input$folders,
+          create_report = isTRUE(input$create_report),
           ext_name = input$ext_name,
-          data_raw = input$data_raw,
-          data = input$data,
-          admin = input$admin,
-          reports = input$reports,
-          docs = input$docs
+          open_project = isTRUE(input$open_project)
         )
-        output$status <- shiny::renderText(paste("Project created successfully at:", file.path(project_path(), input$project_name)))
+
+        output$status <- shiny::renderText("✅ Project created successfully.")
       }, error = function(e) {
-        shiny::showModal(shiny::modalDialog(title = "Error", e$message, easyClose = TRUE))
+        shiny::showModal(shiny::modalDialog("Error", e$message, easyClose = TRUE))
       })
+      shiny::stopApp()
+    })
+  }
+
+  shiny::shinyApp(ui, server)
+}
+
+
+#' Shiny Addin: Create Report Template
+#'
+#' Launches a Shiny app to generate a report template in a user-selected folder.
+#'
+#' @export
+create_template_addin <- function() {
+
+  ui <- shiny::fluidPage(
+    shiny::titlePanel("Create Report Template"),
+
+    shiny::sidebarLayout(
+      shiny::sidebarPanel(
+        shiny::textInput("file_name", "Report File Name:", value = "report"),
+        shiny::selectInput("ext_name", "Report Type:",
+          choices = list.files(system.file("ext_qmd/_extensions", package = "thekidsbiostats")),
+          selected = "html"),
+        shiny::actionButton("browse", "Browse Output Folder"),
+        shiny::textOutput("selected_dir"),
+        shiny::actionButton("create", "Create Template", class = "btn-success")
+      ),
+      shiny::mainPanel(
+        shiny::verbatimTextOutput("status")
+      )
+    )
+  )
+
+  server <- function(input, output, session) {
+    output_path <- shiny::reactiveVal(NULL)
+
+    shiny::observeEvent(input$browse, {
+      selected <- rstudioapi::selectDirectory("Choose target directory")
+      if (!is.null(selected)) output_path(selected)
+    })
+
+    output$selected_dir <- shiny::renderText({
+      req(output_path())
+      paste("Selected Directory:", output_path())
+    })
+
+    shiny::observeEvent(input$create, {
+      req(input$file_name, output_path())
+
+      tryCatch({
+        create_template(
+          file_name = input$file_name,
+          directory = output_path(),
+          ext_name = input$ext_name,
+          open_file = TRUE
+        )
+        output$status <- shiny::renderText("✅ Report template created successfully.")
+      }, error = function(e) {
+        shiny::showModal(shiny::modalDialog("Error", e$message, easyClose = TRUE))
+      })
+      shiny::stopApp()
     })
   }
 
