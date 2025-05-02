@@ -10,7 +10,6 @@
 #' @param create_report Whether to create a report using `create_template()`.
 #' @param create_rproj Whether to include a .Rproj file.
 #' @param open_project Whether to open the new project in a new RStudio session.
-#' @param close_current Whether to close the current RStudio session.
 #' @param ... Additional arguments passed to `create_template()`.
 #'
 #' @return Invisibly returns the project path.
@@ -22,7 +21,6 @@ create_project <- function(project_name,
                            create_report = FALSE,
                            create_rproj = TRUE,
                            open_project = TRUE,
-                           close_current = FALSE,
                            ...) {
   if (missing(project_name) || project_name == "") stop("You must provide a project_name.")
 
@@ -71,11 +69,6 @@ create_project <- function(project_name,
     if (!is.null(qmd_file) && file.exists(qmd_file)) {
       options(thekidsbiostats.qmd_to_open = normalizePath(qmd_file))
     }
-  }
-
-  if (close_current) {
-    message("🔒 Closing current R session...")
-    callr::r_bg(function() { Sys.sleep(1); q("ask") })
   }
 
   message("✅ Project setup complete!")

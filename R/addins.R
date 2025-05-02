@@ -61,28 +61,47 @@ insert_callout <- function() {
   server <- function(input, output, session) {
 
     observeEvent(input$note, {
-      rstudioapi::insertText("::: {.callout-note}\n<Insert text here>\n:::\n")
+      rstudioapi::insertText("::: {.callout-note}\n<your text>\n:::\n")
       stopApp()
     })
 
     observeEvent(input$warning, {
-      rstudioapi::insertText("::: {.callout-warning}\n<Insert text here>\n:::\n")
+      rstudioapi::insertText("::: {.callout-warning}\n<your text>\n:::\n")
       stopApp()
     })
 
     observeEvent(input$important, {
-      rstudioapi::insertText("::: {.callout-important}\n<Insert text here>\n:::\n")
+      rstudioapi::insertText("::: {.callout-important}\n<your text>\n:::\n")
       stopApp()
     })
 
     observeEvent(input$tip, {
-      rstudioapi::insertText("::: {.callout-tip}\n<Insert text here>\n:::\n")
+      rstudioapi::insertText("::: {.callout-tip}\n<your text>\n:::\n")
       stopApp()
     })
   }
 
   viewer <- dialogViewer("Insert Callout", width = 250, height = 250)
   runGadget(ui, server, viewer = viewer)
+}
+
+#' Insert Callout via RStudio Addin
+#'
+#' Inserts a Quarto callout block with placeholder text directly at the cursor.
+#'
+#' @return None. Inserts text into the active RStudio document.
+#' @export
+#'
+#' @examples
+#' insert_callout()
+insert_callout_2 <- function() {
+  if (rstudioapi::isAvailable()) {
+    rstudioapi::insertText(
+      "::: {.callout-tip}\n#options: tip, note, warning, important\n<your text>\n:::\n"
+    )
+  } else {
+    warning("RStudio API is not available.")
+  }
 }
 
 #' Insert Margin Block at Cursor
@@ -99,7 +118,7 @@ insert_callout <- function() {
 insert_margin <- function() {
   if (rstudioapi::isAvailable()) {
     rstudioapi::insertText(
-      "::: {.column-margin}\ncomment text\n:::\n"
+      "::: {.column-margin}\n<your comment>\n:::\n"
     )
   } else {
     warning("RStudio API is not available.")
@@ -244,7 +263,7 @@ create_template_addin <- function() {
       }, error = function(e) {
         showModal(modalDialog("Error", e$message, easyClose = TRUE))
       })
-      stopApp()
+      stopA
     })
   }
 
