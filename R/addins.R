@@ -80,7 +80,9 @@ insert_callout <- function() {
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' insert_callout()
+#' }
 insert_callout_2 <- function() {
   if (rstudioapi::isAvailable()) {
     rstudioapi::insertText(
@@ -120,10 +122,10 @@ insert_margin <- function() {
 #'
 #' @export
 create_project_addin <- function() {
- 
+
   ui <- shiny::fluidPage(
     shiny::titlePanel("Create a New Project"),
-    
+
     shiny::sidebarLayout(
       shiny::sidebarPanel(
         shiny::textInput("project_name", "Project Name:", ""),
@@ -196,10 +198,10 @@ create_project_addin <- function() {
 #'
 #' @export
 create_template_addin <- function() {
-  
+
   ui <- shiny::fluidPage(
     shiny::titlePanel("Create Report Template"),
-    
+
     shiny::sidebarLayout(
       shiny::sidebarPanel(
         shiny::textInput("file_name", "Report File Name:", value = "report"),

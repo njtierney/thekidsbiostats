@@ -13,5 +13,7 @@ None. Inserts text into the active RStudio document.
 Inserts a Quarto callout block with placeholder text directly at the cursor.
 }
 \examples{
+\dontrun{
 insert_callout()
+}
 }

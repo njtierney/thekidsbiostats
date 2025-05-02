@@ -12,7 +12,6 @@ create_project(
   create_report = FALSE,
   create_rproj = TRUE,
   open_project = TRUE,
-  close_current = FALSE,
   ...
 )
 }
@@ -30,8 +29,6 @@ create_project(
 \item{create_rproj}{Whether to include a .Rproj file.}
 
 \item{open_project}{Whether to open the new project in a new RStudio session.}
-
-\item{close_current}{Whether to close the current RStudio session.}
 
 \item{...}{Additional arguments passed to \code{create_template()}.}
 }
