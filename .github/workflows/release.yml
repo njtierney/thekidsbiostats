@@ -11,7 +11,8 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
       - name: Extract version from DESCRIPTION
         id: get_version
@@ -24,7 +25,7 @@ jobs:
           git config user.name "GitHub Actions"
           git config user.email "actions@github.com"
           git tag v${{ steps.get_version.outputs.version }}
-          git push origin v${{ steps.get_version.outputs.version }}
+          git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }} v${{ steps.get_version.outputs.version }}
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
@@ -32,4 +33,4 @@ jobs:
           tag_name: v${{ steps.get_version.outputs.version }}
           name: v${{ steps.get_version.outputs.version }}
           body: |
-            See [NEWS.md](https://github.com/${{ github.repository }}/blob/main/NEWS.md) for changes.
+            See [NEWS.md](https://github.com/${{ github.repository }}/blob/main/NEWS.md) for a detailed changelog.
