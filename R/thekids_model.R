@@ -30,6 +30,7 @@
 #' For a more thorough example, see the \href{../doc/model_output.html}{vignette}.
 #'
 #' @examples
+#' \dontrun{
 #' # Example 1: Linear model
 #' data(mtcars)
 #' thekids_model(mtcars, y = "mpg", x = "wt", model = "linear")
@@ -41,6 +42,7 @@
 #' library(quantreg)
 #' data(engel)
 #' thekids_model(engel, y = "foodexp", x = "income", model = "quantile", tau = 0.5)
+#' }
 #'
 #' @seealso \code{\link{thekids_model_output}}
 #'
@@ -88,7 +90,7 @@ thekids_model <- function(data, y, x, formula = "", model = "linear", ...){
     mod <- ordinal::clm(formula = form, data = dat_mod, ...)
   }
 
-  thekids_model_output(mod, by = x, dat_mod, ...)
+  thekids_model_output(mod, by = x, data = dat_mod, ...)
 }
 
 

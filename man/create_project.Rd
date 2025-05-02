@@ -2,57 +2,40 @@
 % Please edit documentation in R/create_project.R
 \name{create_project}
 \alias{create_project}
-\title{Create a New Project Structure with Extension}
+\title{Create a new project structure}
 \usage{
 create_project(
   project_name,
-  ext_name = "basic",
-  data_raw = T,
-  data = T,
-  admin = T,
-  reports = T,
-  docs = T,
-  other_folders = NULL
+  path = NULL,
+  folders = c("data-raw", "data", "admin", "docs", "reports"),
+  ext_name = "html",
+  create_report = FALSE,
+  create_rproj = TRUE,
+  open_project = TRUE,
+  ...
 )
 }
 \arguments{
-\item{project_name}{A string. The name of the project to create.}
+\item{project_name}{Name of the new project folder.}
 
-\item{ext_name}{A string. The type of project to create. Defaults to \code{"basic"}. The extension must be available in the package's \verb{ext_proj/_extensions/} directory.}
+\item{path}{Parent directory for the project. If NULL, prompts the user.}
 
-\item{data_raw}{Logical. If \code{TRUE}, a \code{data_raw} directory will be created in the project. Defaults to \code{TRUE}.}
+\item{folders}{Character vector of subfolders to create.}
 
-\item{data}{Logical. If \code{TRUE}, a \code{data} directory will be created in the project. Defaults to \code{TRUE}.}
+\item{ext_name}{Name of the report extension for \code{create_template()}.}
 
-\item{admin}{Logical. If \code{TRUE}, an \code{admin} directory will be created in the project. Defaults to \code{TRUE}.}
+\item{create_report}{Whether to create a report using \code{create_template()}.}
 
-\item{reports}{Logical. If \code{TRUE}, a \code{reports} directory will be created in the project. Defaults to \code{TRUE}.}
+\item{create_rproj}{Whether to include a .Rproj file.}
 
-\item{docs}{Logical. If \code{TRUE}, a \code{docs} directory will be created in the project. Defaults to \code{TRUE}.}
+\item{open_project}{Whether to open the new project in a new RStudio session.}
 
-\item{other_folders}{Vector of strings that contain any other folders that should also be created. Elements should be unique. Default \code{NULL}.}
+\item{...}{Additional arguments passed to \code{create_template()}.}
+}
+\value{
+Invisibly returns the project path.
 }
 \description{
-This function creates a directory structure for a new project based on a specified extension.
-It can also create additional folders such as \code{data_raw}, \code{data}, \code{admin}, \code{reports}, and \code{docs}.
-The function copies specific files and folders from the chosen extension to the project directory.
-}
-\details{
-This function helps set up the structure of a new project using a predefined extension and
-optional additional directories. It ensures that the selected extension is valid by checking
-the available extensions from the \code{thekidsbiostats} package. After creating the necessary folders,
-the function copies the appropriate files from the package extension into the project.
-
-For a more thorough example, see the \href{../doc/project_workflow.html}{vignette}.
-}
-\note{
-Ensure that the \code{thekidsbiostats} package is installed and contains the required extension
-in \verb{ext_proj/_extensions/}.
-}
-\examples{
-\dontrun{
-create_project(ext_name = "basic")
-create_project(ext_name = "targets", data_raw = FALSE, docs = TRUE)
-}
-
+Creates a new project folder with subfolders, an RProj file, and optional Quarto report.
+Can optionally open the project in a new session and close the current one.
 }

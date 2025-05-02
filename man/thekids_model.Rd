@@ -44,6 +44,7 @@ for streamlined customization of model outputs.
 For a more thorough example, see the \href{../doc/model_output.html}{vignette}.
 }
 \examples{
+\dontrun{
 # Example 1: Linear model
 data(mtcars)
 thekids_model(mtcars, y = "mpg", x = "wt", model = "linear")
@@ -55,6 +56,7 @@ thekids_model(mtcars \%>\% mutate(cyl = as.factor(cyl)), y = "mpg", x = "cyl", m
 library(quantreg)
 data(engel)
 thekids_model(engel, y = "foodexp", x = "income", model = "quantile", tau = 0.5)
+}
 
 }
 \seealso{
