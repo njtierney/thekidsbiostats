@@ -1,6 +1,7 @@
 # thekidsbiostats
 
 ![R-CMD-check](https://github.com/The-Kids-Biostats/thekidsbiostats/actions/workflows/R-CMD-check.yaml/badge.svg)
+![Total downloads](https://img.shields.io/github/downloads/the-kids-biostats/thekidsbiostats/total)
 
 Package with helper functions and formatting templates used by the Biostatistics team of The Kids Research Institute Australia.
 
