@@ -85,9 +85,7 @@ thekids_table <- function(x,
     nrow(as_tibble(x))
   } else if(inherits(x, "flextable")){
     nrow_part(x, part = "header") + nrow_part(x, part = "body") + nrow_part(x, part = "footer")
-  } else if(inherits(x, "tbl_merge")){
-    nrow(as_tibble(x))
-  } else if(inherits(x, "tbl_stack")){
+  } else if(inherits(x, c("tbl_merge", "tbl_stack", "tbl_regression"))){
     nrow(as_tibble(x))
   } else {
     nrow(x)
