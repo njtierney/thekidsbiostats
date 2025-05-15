@@ -225,7 +225,7 @@ create_project_addin <- function() {
           ext_name = input$ext_name,
           open_project = FALSE #isTRUE(input$open_project)
         )
-        print("Success")
+
         output$status <- shiny::renderText("✅ Project created successfully.")
 
         shiny::showModal(shiny::modalDialog(
@@ -258,7 +258,7 @@ create_project_addin <- function() {
       for (folder in included_folders) {
         if (folder == "reports") {
           if (input$create_report) {
-            report_file <- paste0("report.", input$ext_name)
+            report_file <- "report.qmd"
             tree[[paste0(folder, "/")]] <- structure(
               setNames(list(structure("", sticon = "file")), report_file),
               stopened = TRUE
@@ -286,7 +286,7 @@ create_project_addin <- function() {
 
         # Also open the report file, if it was created
         if (isTRUE(input$create_report)) {
-          qmd_file <- file.path(project_path(), "reports", paste0("report.", input$ext_name))
+          qmd_file <- file.path(project_path(), "reports", "report.qmd")
           if (file.exists(qmd_file)) {
             options(thekidsbiostats.qmd_to_open = normalizePath(qmd_file))
           }
