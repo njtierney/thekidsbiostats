@@ -15,9 +15,9 @@
 #' @param x a table, typically a data.frame, tibble, or output from gtsummary
 #' @param font.size the font size for text in the body of the table, defaults to 8 (passed throught to set_flextable_defaults)
 #' @param font.size.header the font size for text in the header of the table, defaults to 10
-#' @param line.spacing line spacing for the table, defaults to 1.5 (passed throught to set_flextable_defaults)
+#' @param line.spacing line spacing for the table, defaults to 1.5 (passed through to set_flextable_defaults)
 #' @param padding padding around all four sides of the text within the cell, defaults to 2.5 (passed throught to set_flextable_defaults)
-#' @param colour a colour platte from The Kids branding, options include "Saffron", "Pumpkin", "Teal", "DarkTeal", "CelestialBlue", "AzureBlue", "MidnightBlue", or "CoolGrey", defaults to 'CoolGrey'
+#' @param colour a colour palette from The Kids branding, options include "Saffron", "Pumpkin", "Teal", "DarkTeal", "CelestialBlue", "AzureBlue", "MidnightBlue", or "CoolGrey", defaults to 'CoolGrey'
 #' @param zebra puts and alternating 'colour then white' theming onto the table, based on the selected colouring (defaults to `F`)
 #' @param highlight a numeric vector indicating which rows are to receive a colour highlight, based on the selected colouring (defaults to `NULL` giving no highlighted rows)
 #' @param ... other parameters passed through to \code{\link[flextable]{set_flextable_defaults}}
@@ -91,6 +91,8 @@ thekids_table <- function(x,
     nrow(as_tibble(x))
   } else if(inherits(x, "flextable")){
     nrow_part(x, part = "header") + nrow_part(x, part = "body") + nrow_part(x, part = "footer")
+  } else if(inherits(x, c("tbl_merge", "tbl_stack", "tbl_regression"))){
+    nrow(as_tibble(x))
   } else {
     nrow(x)
   }
