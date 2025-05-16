@@ -193,7 +193,7 @@ create_project_addin <- function() {
       paste(" ", project_path())
     })
 
-    observeEvent(input$add_custom_folder, {
+    shiny::observeEvent(input$add_custom_folder, {
       new_folder <- trimws(input$custom_folders)
 
       if (nzchar(new_folder)) {
@@ -204,7 +204,7 @@ create_project_addin <- function() {
           updated_choices <- c(all_choices, new_folder)
           options(all_folders = updated_choices)  # Save new state
 
-          updateCheckboxGroupInput(
+          shiny::updateCheckboxGroupInput(
             inputId = "folders",
             choices = updated_choices,
             selected = c(current_choices, new_folder)
@@ -276,22 +276,13 @@ create_project_addin <- function() {
     })
 
 
-    observeEvent(input$confirm_open, {
+    shiny::observeEvent(input$confirm_open, {
       shiny::removeModal()
 
       rproj_file <- file.path(project_path(),input$project_name, paste0(input$project_name, ".Rproj"))
 
       if (file.exists(rproj_file) && rstudioapi::isAvailable()) {
         rstudioapi::openProject(path = rproj_file, newSession = TRUE)
-
-        # Also open the report file, if it was created
-        if (isTRUE(input$create_report)) {
-          qmd_file <- file.path(project_path(), "reports", "report.qmd")
-          if (file.exists(qmd_file)) {
-            options(thekidsbiostats.qmd_to_open = normalizePath(qmd_file))
-          }
-        }
-
       } else {
         output$status <- renderText("⚠️ Could not open project (file missing or RStudio API unavailable).")
       }
@@ -321,16 +312,17 @@ create_template_addin <- function() {
     shiny::titlePanel("Create Report Template"),
 
     shiny::sidebarLayout(
-      shiny::sidebarPanel(
-        shiny::textInput("file_name", "Report File Name:", value = "report"),
+      shiny::sidebarPanel(width=8,
+        shiny::textInput("file_name", "Report File Name:", value = "report", width = "50%"),
         shiny::selectInput("ext_name", "Report Type:",
           choices = list.files(system.file("ext_qmd/_extensions", package = "thekidsbiostats")),
-          selected = "html"),
+          selected = "html", width = "50%"),
         shiny::actionButton("browse", "Browse Output Folder"),
         shiny::textOutput("selected_dir"),
-        shiny::actionButton("create", "Create Template", class = "btn-success")
+        shiny::br(),
+        shiny::actionButton("create", "Create Template", class = "btn-primary")
       ),
-      shiny::mainPanel(
+      shiny::mainPanel(width=4,
         shiny::verbatimTextOutput("status")
       )
     )
