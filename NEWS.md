@@ -1,5 +1,18 @@
 <!-- NEWS.md is maintained by https://cynkra.github.io/fledge, do not edit -->
 
+# thekidsbiostats 1.1.0
+
+* Create documentation for thekids_colours, thekids_palettes
+* Update license
+* Remove duplicated huxtable Import
+* More updates to thekids_palettes documentation
+* Update .Rbuildignore
+* Fix dependency errors and notes
+* Include exit conditions for release.yml in case tag already exists
+* Fix 4 additional warnings following merge update from main
+* Updated Authorship in DESCRIPTION
+
+
 # thekidsbiostats 1.0.2
 
 * Include shinyFiles, ggeffects in DESCRIPTION>Depends
