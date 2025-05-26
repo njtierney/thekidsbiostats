@@ -30,15 +30,19 @@
 #' For a more thorough example, see the \href{../doc/model_output.html}{vignette}.
 #'
 #' @examples
-#' \dontrun{
 #' # Example 1: Linear model
+#' \dontrun{
 #' data(mtcars)
 #' thekids_model(mtcars, y = "mpg", x = "wt", model = "linear")
+#' }
 #'
 #' # Example 2: Linear model with factor
+#' \dontrun{
 #' thekids_model(mtcars %>% mutate(cyl = as.factor(cyl)), y = "mpg", x = "cyl", model = "linear")
+#' }
 #'
 #' # Example 3: Quantile regression
+#' \dontrun{
 #' library(quantreg)
 #' data(engel)
 #' thekids_model(engel, y = "foodexp", x = "income", model = "quantile", tau = 0.5)
@@ -61,24 +65,24 @@ thekids_model <- function(data, y, x, formula = "", model = "linear", ...){
 
   # Create formula from y, x, and formula arguments
   if(formula == ""){
-    form <- as.formula(paste0("`", y, "` ~ `", x, "`"))
+    form <- stats::as.formula(paste0("`", y, "` ~ `", x, "`"))
   } else {
-    form <- as.formula(paste0("`", y, "` ~ `", x, "` + ", formula))
+    form <- stats::as.formula(paste0("`", y, "` ~ `", x, "` + ", formula))
   }
 
   # Reduce data to only columns used in analysis and only complete-case rows.
   vars <- formula %>%
     str_split("\\+") %>%
-    flatten_chr() %>%
-    str_trim()
+    purrr::flatten_chr() %>%
+    stringr::str_trim()
 
   dat_mod <- data %>%
-    select({{y}}, {{x}}, any_of(vars)) %>%
-    na.omit()
+    dplyr::select({{y}}, {{x}}, dplyr::any_of(vars)) %>%
+    stats::na.omit()
 
   # Run model
   if(model == "linear") {
-    mod <- lm(formula = form, data = dat_mod, ...)
+    mod <- stats::lm(formula = form, data = dat_mod, ...)
   }
   if(model == "negbin") {
     mod <- MASS::glm.nb(formula = form, data = dat_mod, ...)
