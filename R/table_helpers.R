@@ -36,11 +36,11 @@ table_theme <- function(x,
 
   # Footer formatting
   if (f_n > 0) {
-    even <- seq_len(f_n) %% 2 == 0
-    odd <- !even
-    x <- bg(x, i = which(odd), bg = footer_bg["odd"], part = "footer")
-    x <- bg(x, i = which(even), bg = footer_bg["even"], part = "footer")
-    x <- bold(x, part = "footer")
+    #even <- seq_len(f_n) %% 2 == 0
+    #odd <- !even
+    #x <- bg(x, i = which(odd), bg = footer_bg["odd"], part = "footer")
+    #x <- bg(x, i = which(even), bg = footer_bg["even"], part = "footer")
+    #x <- bold(x, part = "footer")
   }
 
   # Body formatting

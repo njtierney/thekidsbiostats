@@ -63,6 +63,7 @@ thekids_table <- function(x,
                           font_family = "Barlow",
                           ...) {
 
+
   # Check font family availability
   font_family <- check_font_family(font_family)
 
@@ -89,7 +90,30 @@ thekids_table <- function(x,
     stop("Objects of class 'knitr_kable' are not yet supported. Please convert to a dataframe or flextable first.")
   }
 
-  table_out <- table_coerce(x) # Coerce x to flextable
+
+  # Save *existing* flextable defaults so they can be restored at the end
+  old_defaults <- getOption("flextable.defaults")
+
+
+  # List arguments for set_flextable_defaults()
+  args_for_defaults <- list(font.family    = font_family,
+                            font.size      = font.size,
+                            line.spacing   = line.spacing,
+                            padding        = padding,
+                            table.layout   = "autofit",
+                            big.mark       = "")
+
+  # Grab any additional named arguments from `...`
+  extra <- list(...)
+  if (length(extra)) {
+    args_for_defaults[names(extra)] <- extra # If padding.top = 20, padding.default will be overridden
+  }
+
+
+  # NOW set the flextable defaults
+  # Any flextable we build below will take these as its baseline
+  do.call(flextable::set_flextable_defaults, args_for_defaults)
+
 
   # Select appropriate theming function
   theme_fun <- if (zebra) {
@@ -100,19 +124,18 @@ thekids_table <- function(x,
     function(x) table_non_zebra(x, colour)
   }
 
+  table_out <- table_coerce(x) # Coerce x to flextable
+  table_out <- theme_fun(table_out)
+
   table_out <- table_out %>%
-    theme_fun() %>%
-    flextable::fontsize(size = font.size, part = "all") %>%
     flextable::fontsize(size = font.size.header, part = "header") %>%
-    flextable::font(fontname = font_family, part = "all") %>%
-    flextable::line_spacing(space = line.spacing, part = "all") %>%
-    flextable::padding(padding = padding, part = "all") %>%
     flextable::color(color = "white", part = "header") %>%
     flextable::color(color = "#111921", part = "body") %>%
     flextable::hline_top(part = "all") %>%
-    flextable::hline_bottom(part = "all") %>%
-    flextable::set_table_properties(layout = "autofit") %>%
+    flextable::hline_bottom() %>%
     flextable::autofit()
+
+  options(flextable.defaults = old_defaults)
 
   return(table_out)
 }
