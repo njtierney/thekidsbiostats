@@ -1,24 +1,3 @@
-#' Count the number of rows in a table object
-#'
-#' Used internally to determine the number of rows in tbl_summary, flextable, or data.frame objects.
-#'
-#' @param x A table-like object
-#' @return An integer indicating the number of rows
-#' @noRd
-table_nrow <- function(x){
-  n_rows <- if (inherits(x, c("tbl_summary", "tbl_merge", "tbl_stack", "tbl_regression"))) {
-    nrow(tidyr::as_tibble(x))
-  } else if(inherits(x, "flextable")){
-    nrow_part(x, part = "header") + nrow_part(x, part = "body") + nrow_part(x, part = "footer")
-  } else {
-    nrow(x)
-  }
-
-  return(n_rows)
-}
-
-
-
 #' Apply base theming to a flextable
 #'
 #' Internal function for setting header, footer, and body background colors,
@@ -111,13 +90,23 @@ table_zebra <- function(x, colour) {
 #' @return A styled flextable
 #' @noRd
 table_highlight <- function(x, colour, highlight) {
-  # Row indexing check
-  n_rows <- table_nrow(x)
+  # x must already be converted to a flextable
+  stopifnot(inherits(x, "flextable"))
+
+  # Ensure the highlight value is in integer
+  if (!is.null(highlight)) {
+    if (!is.numeric(highlight) || any(highlight <= 0) || any(highlight != floor(highlight))) {
+      stop("`highlight` must be a vector of positive integers.", call. = FALSE)
+    }
+  }
+
+  b_n <- nrow_part(x, "body")
   if (!is.null(highlight) && length(highlight) > 0) {
-    if (max(highlight) > n_rows) {
-      stop(sprintf("You are trying to highlight a row (%s) beyond the number of rows in the table (%d).",
-                   paste(highlight, collapse = ", "),
-                   n_rows))
+    if (any(highlight > b_n)) {
+      stop(sprintf(
+        "You are trying to highlight a row (%s) beyond the number of rows in the table body (%d).",
+        paste(highlight, collapse = ", "), b_n
+      ), call. = FALSE)
     }
   }
 

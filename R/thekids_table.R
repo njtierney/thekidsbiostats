@@ -89,6 +89,7 @@ thekids_table <- function(x,
     stop("Objects of class 'knitr_kable' are not yet supported. Please convert to a dataframe or flextable first.")
   }
 
+  table_out <- table_coerce(x) # Coerce x to flextable
 
   # Select appropriate theming function
   theme_fun <- if (zebra) {
@@ -99,7 +100,7 @@ thekids_table <- function(x,
     function(x) table_non_zebra(x, colour)
   }
 
-  table_out <- table_coerce(x) %>%
+  table_out <- table_out %>%
     theme_fun() %>%
     flextable::fontsize(size = font.size, part = "all") %>%
     flextable::fontsize(size = font.size.header, part = "header") %>%
