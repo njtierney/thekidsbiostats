@@ -95,37 +95,39 @@ thekids_table <- function(x,
   old_defaults <- getOption("flextable.defaults")
 
 
-  # List arguments for set_flextable_defaults()
-  args_for_defaults <- list(font.family    = font_family,
-                            font.size      = font.size,
-                            line.spacing   = line.spacing,
-                            padding        = padding,
-                            table.layout   = "autofit",
-                            big.mark       = "")
-
-  # Grab any additional named arguments from `...`
-  extra <- list(...)
-  if (length(extra)) {
-    args_for_defaults[names(extra)] <- extra # If padding.top = 20, padding.default will be overridden
-  }
-
-
   # NOW set the flextable defaults
-  # Any flextable we build below will take these as its baseline
-  do.call(flextable::set_flextable_defaults, args_for_defaults)
-
-
-  # Select appropriate theming function
-  theme_fun <- if (zebra) {
-    function(x) table_zebra(x, colour)
-  } else if (!is.null(highlight)) {
-    function(x) table_highlight(x, colour, highlight)
+  if (zebra == TRUE){
+    flextable::set_flextable_defaults(font.family = font_family,
+                                      font.size = font.size,
+                                      theme_fun = function(y) table_zebra(y, colour = colour),
+                                      line_spacing = line.spacing,
+                                      padding = padding,
+                                      big.mark = "",
+                                      table.layout = "autofit",
+                                      ...)
+  } else if (!is.null(highlight)){
+    flextable::set_flextable_defaults(font.family = font_family,
+                                      font.size = font.size,
+                                      theme_fun = function(y) table_highlight(y, colour = colour, highlight = highlight),
+                                      line_spacing = line.spacing,
+                                      padding = padding,
+                                      big.mark = "",
+                                      table.layout = "autofit",
+                                      ...)
   } else {
-    function(x) table_non_zebra(x, colour)
+    flextable::set_flextable_defaults(font.family = font_family,
+                                      font.size = font.size,
+                                      theme_fun = function(y) table_non_zebra(y, colour = colour),
+                                      line_spacing = line.spacing,
+                                      padding = padding,
+                                      big.mark = "",
+                                      table.layout = "autofit",
+                                      ...)
   }
 
-  table_out <- table_coerce(x) # Coerce x to flextable
-  table_out <- theme_fun(table_out)
+  # Coerce x to flextable
+  ## amended flextable defaults will be applied within function environment
+  table_out <- table_coerce(x)
 
   table_out <- table_out %>%
     flextable::fontsize(size = font.size.header, part = "header") %>%
@@ -135,7 +137,8 @@ thekids_table <- function(x,
     flextable::hline_bottom() %>%
     flextable::autofit()
 
-  options(flextable.defaults = old_defaults)
-
   return(table_out)
+
+  # Restore old flextable defaults
+  options(flextable.defaults = old_defaults)
 }

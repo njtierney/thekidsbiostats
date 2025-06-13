@@ -22,16 +22,16 @@ table_theme <- function(x,
   f_n <- nrow_part(x, "footer")
   b_n <- nrow_part(x, "body")
 
-  x <- border_remove(x)
-  x <- align(x, align = "center", part = "header")
+  x <- flextable::border_remove(x)
+  x <- flextable::align(x, align = "center", part = "header")
 
   # Header formatting
   if (h_n > 0) {
     even <- seq_len(h_n) %% 2 == 0
     odd <- !even
-    x <- bg(x, i = which(odd), bg = header_bg["odd"], part = "header")
-    x <- bg(x, i = which(even), bg = header_bg["even"], part = "header")
-    x <- bold(x, part = "header")
+    x <- flextable::bg(x, i = which(odd), bg = header_bg["odd"], part = "header")
+    x <- flextable::bg(x, i = which(even), bg = header_bg["even"], part = "header")
+    x <- flextable::bold(x, part = "header")
   }
 
   # Footer formatting
@@ -47,18 +47,18 @@ table_theme <- function(x,
   if (b_n > 0) {
     if (!is.null(highlight)) {
       other <- setdiff(seq_len(b_n), highlight)
-      x <- bg(x, i = highlight, bg = body_bg["highlight"], part = "body")
-      x <- bg(x, i = other, bg = body_bg["other"], part = "body")
+      x <- flextable::bg(x, i = highlight, bg = body_bg["highlight"], part = "body")
+      x <- flextable::bg(x, i = other, bg = body_bg["other"], part = "body")
     } else {
       even <- seq_len(b_n) %% 2 == 0
       odd <- !even
-      x <- bg(x, i = which(odd), bg = body_bg["odd"], part = "body")
-      x <- bg(x, i = which(even), bg = body_bg["even"], part = "body")
+      x <- flextable::bg(x, i = which(odd), bg = body_bg["odd"], part = "body")
+      x <- flextable::bg(x, i = which(even), bg = body_bg["even"], part = "body")
     }
   }
 
-  x <- align_text_col(x, align = "left", header = TRUE)
-  x <- align_nottext_col(x, align = "right", header = TRUE)
+  x <- flextable::align_text_col(x, align = "left", header = TRUE)
+  x <- flextable::align_nottext_col(x, align = "right", header = TRUE)
   x
 }
 
