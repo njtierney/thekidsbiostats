@@ -92,8 +92,12 @@ thekids_table <- function(x,
 
 
   # Save *existing* flextable defaults so they can be restored at the end
-  old_defaults <- getOption("flextable.defaults")
+  old_defaults <- flextable::get_flextable_defaults()
 
+  # Ensure these existing defaults are reset on any exit
+  #on.exit(flextable::init_flextable_defaults(), add = TRUE) ## This works! But resets to package default options on exit
+  on.exit(do.call(flextable::set_flextable_defaults, old_defaults),
+          add = TRUE)
 
   # NOW set the flextable defaults
   if (zebra == TRUE){
@@ -139,6 +143,4 @@ thekids_table <- function(x,
 
   return(table_out)
 
-  # Restore old flextable defaults
-  options(flextable.defaults = old_defaults)
 }
