@@ -51,12 +51,14 @@ Default settings produce a relatively compact table, to avoid reports becoming e
 
 The output can be piped (\verb{\%>\%}) into further \code{flextable()} functions for advance customisation of the appearance.
 
-Currently the function works well with input in the form of data frames, tibbles, dplyr pipes (think \code{summarise()}), \code{gtsummary()} output, \code{kable()} output, and \code{flextable()} output.
+Currently the function works well with input in the form of data frames, tibbles, dplyr pipes (think \code{summarise()}), \code{gtsummary()} outputs. \code{kable()} output is not currently supported in general.
 }
 \note{
 Errors may be encountered if the input to the function (kable/gtsummary/flextable) has already received a lot of processing (merging cells, aesthetic changes). The intention is that these things would occur after running \code{thekids_table()}.
 
 Font family must be installed at a system level, otherwise the default ("sans") will be applied.
+
+Pre-specified formatting applied to 'flextable' objects (ahead of \code{thekids_table()}) may not carry over as expected. Please consider using \code{thekids_table() }in place of an explicit \code{flextable()} call, because our function already coerces the table to a flextable object.
 }
 \examples{
 

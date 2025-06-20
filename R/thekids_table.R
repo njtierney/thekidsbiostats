@@ -8,12 +8,14 @@
 #'
 #' The output can be piped (`%>%`) into further `flextable()` functions for advance customisation of the appearance.
 #'
-#' Currently the function works well with input in the form of data frames, tibbles, dplyr pipes (think `summarise()`), `gtsummary()` output, `kable()` output, and `flextable()` output.
+#' Currently the function works well with input in the form of data frames, tibbles, dplyr pipes (think `summarise()`), `gtsummary()` outputs. `kable()` output is not currently supported in general.
 #'
 #' @note
 #' Errors may be encountered if the input to the function (kable/gtsummary/flextable) has already received a lot of processing (merging cells, aesthetic changes). The intention is that these things would occur after running `thekids_table()`.
 #'
 #' Font family must be installed at a system level, otherwise the default ("sans") will be applied.
+#'
+#' Pre-specified formatting applied to 'flextable' objects (ahead of `thekids_table()`) may not carry over as expected. Please consider using `thekids_table() `in place of an explicit `flextable()` call, because our function already coerces the table to a flextable object.
 #'
 #' @param x a table, typically a data.frame, tibble, or output from gtsummary
 #' @param font.size the font size for text in the body of the table, defaults to 8 (passed throught to set_flextable_defaults)
@@ -88,6 +90,11 @@ thekids_table <- function(x,
   # Check if knitr_kable class object is parsed
   if (inherits(x, "knitr_kable")) {
     stop("Objects of class 'knitr_kable' are not yet supported. Please convert to a dataframe or flextable first.")
+  }
+
+  # Check if x is already class flextable
+  if (inherits(x, "flextable")) {
+    warning("Object of class 'flextable' detected. Please note that some flextable formatting may not carry over as expected.\n\nPlease consider applying `thekids_table()` in place of `flextable()` call in your workflow.")
   }
 
 
