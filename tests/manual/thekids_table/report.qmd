@@ -158,6 +158,19 @@ dat %>%
 ```
 
 
+## 8) `kable` tables
+
+If `kable()` is called, an error should be returned if `format="html"` is not specified.
+
+```{r}
+#| code-fold: false
+
+dat %>%
+  knitr::kable() %>%
+  thekids_table()
+```
+
+
 # b) Check `flextable_default` handling
 
 First, extract out the existing flextable defaults:
@@ -323,6 +336,111 @@ dat %>%
                 padding.bottom = 10)
 ```
 
+# e) Check all supported table classes function as expected
+
+## 1) `gtsummary`
+
+### 1.1) `tbl_summary`
+
+```{r}
+#| code-fold: false
+dat %>%
+  tbl_summary(by = cyl,
+              type = list(c(mpg, disp, hp, drat, wt, qsec) ~ "continuous")) %>%
+  modify_spanning_header(all_stat_cols() ~ "Number of Cylinders") %>%
+  thekids_table(highlight = 5)
+```
+
+### 1.2) `tbl_strata`
+
+```{r}
+#| code-fold: false
+
+dat %>%
+  mutate(am = fct_case_when(am == 0 ~ "Automatic",
+                            am == 1 ~ "Manual")) %>%
+  tbl_strata(strata = am,
+             .tbl_fun = ~.x %>%
+               tbl_summary(by = cyl,
+                           type = list(c(mpg, disp, hp, drat, wt, qsec) ~ "continuous"))) %>%
+  thekids_table(highlight = 5)
+```
+
+### 1.3) `tbl_merge`
+
+```{r}
+#| code-fold: false
+
+tab1 <- dat %>%
+  filter(am == 0) %>%
+  tbl_summary(by = cyl,
+              type = list(c(mpg, disp, hp, drat, wt, qsec) ~ "continuous"))
+
+tab2 <- dat %>%
+  filter(am == 1) %>%
+  tbl_summary(by = cyl,
+              type = list(c(mpg, disp, hp, drat, wt, qsec) ~ "continuous"))
+
+tbl_merge(tbls = list(tab1, tab2), 
+          tab_spanner = c("Automatic", "Manual")) %>%
+  thekids_table(highlight = 5)
+```
+
+### 1.4) `tbl_stack`
+
+```{r}
+#| code-fold: false
+
+tab1 <- dat %>%
+  select(cyl, mpg, disp, hp) %>%
+  tbl_summary(by = cyl,
+              type = everything() ~ "continuous")
+
+tab2 <- dat %>%
+  select(cyl, drat, wt, qsec) %>%
+  tbl_summary(by = cyl,
+              type = everything() ~ "continuous")
+
+tbl_stack(tbls = list(tab1, tab2)) %>%
+  thekids_table(highlight = 5)
+```
+
+## 2) `kable`
+
+### 2.1) `kable`
+
+```{r}
+#| code-fold: false
+
+dat %>%
+  rownames_to_column() %>%
+  knitr::kable(format = "html") %>%
+  thekids_table()
+```
+
+### 2.2) `kableExtra`
+
+Should work irrespective of whether `format="html"` is specified or not.
+
+```{r}
+#| code-fold: false
+
+dat %>%
+  rownames_to_column() %>%
+  knitr::kable(format = "html") %>%
+  kableExtra::kable_styling() %>%
+  thekids_table()
+```
+
+```{r}
+#| code-fold: false
+
+dat %>%
+  rownames_to_column() %>%
+  knitr::kable() %>%
+  kableExtra::kable_styling() %>%
+  thekids_table()
+```
 
 ## Reproducibility Information
 
