@@ -22,8 +22,10 @@ Depends:
     gtsummary (>= 2.0),
     flextable (>= 0.9)
 Imports:
+    broom.helpers (>= 1.17.0),
     dplyr (>= 1.1.0),
     fs (>= 1.6),
+    ggeffects (>= 2.2.0),
     ggfortify,
     ggplot2 (>= 3.4.0),
     glue (>= 1.8),
@@ -49,11 +51,9 @@ Imports:
     tidyselect (>= 1.1.0),
 Suggests:
     broom (>= 0.5.6),
-    broom.helpers (>= 1.17.0),
     broom.mixed (>= 0.2.6),
     forcats (>= 0.5.0),
     GGally (>= 2.1.2),
-    ggeffects (>= 2.2.0),
     ggstance (>= 0.3.4),
     here (>= 1.0.1),
     huxtable (>= 5.5.0),

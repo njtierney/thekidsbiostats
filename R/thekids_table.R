@@ -8,12 +8,14 @@
 #'
 #' The output can be piped (`%>%`) into further `flextable()` functions for advance customisation of the appearance.
 #'
-#' Currently the function works well with input in the form of data frames, tibbles, dplyr pipes (think `summarise()`), `gtsummary()` output, `kable()` output, and `flextable()` output.
+#' Currently the function works well with input in the form of data frames, tibbles, dplyr pipes (think `summarise()`), `gtsummary`, and `kable` outputs.
 #'
 #' @note
 #' Errors may be encountered if the input to the function (kable/gtsummary/flextable) has already received a lot of processing (merging cells, aesthetic changes). The intention is that these things would occur after running `thekids_table()`.
 #'
 #' Font family must be installed at a system level, otherwise the default ("sans") will be applied.
+#'
+#' Pre-specified formatting applied to 'flextable' objects (ahead of `thekids_table()`) may not carry over as expected. Please consider using `thekids_table() `in place of an explicit `flextable()` call, because our function already coerces the table to a flextable object.
 #'
 #' @param x a table, typically a data.frame, tibble, or output from gtsummary
 #' @param font.size the font size for text in the body of the table, defaults to 8 (passed throught to set_flextable_defaults)
@@ -58,18 +60,14 @@ thekids_table <- function(x,
                           line.spacing = 1.5,
                           padding = 2.5,
                           colour = "CoolGrey",
-                          zebra = F,
+                          zebra = FALSE,
                           highlight = NULL,
                           font_family = "Barlow",
-                          ...){
+                          ...) {
 
-  # Font fallback if font is not available
-  if (requireNamespace("systemfonts", quietly = TRUE)) {
-    matched_font <- systemfonts::match_fonts(font_family)
-    if (is.na(matched_font$path)) font_family <- "sans"
-  } else {
-    font_family <- "sans"
-  }
+
+  # Check font family availability
+  font_family <- check_font_family(font_family)
 
   # Standardise argument aliasing
   call <- match.call()
@@ -78,227 +76,73 @@ thekids_table <- function(x,
     return(eval(std_call, parent.frame()))
   }
 
-  # Convert kable to tibble early, to facilitate nrow count for highlighting
-
-  if(any(class(x) %in% c("knitr_kable"))) {
-    x <- x %>%
-      as.character %>%
-      rvest::read_html() %>%
-      rvest::html_node("table") %>%
-      rvest::html_table(fill = TRUE) %>%
-      tidyr::as_tibble
+  # Check colours are available
+  if (!colour %in% names(thekids_palettes$primary)) {
+    stop(sprintf("Invalid colour. Choose from: %s",
+                 paste(shQuote(names(thekids_palettes$primary)), collapse = ", ")))
   }
 
-  # Checks for issues
-
-  if(!colour %in% names(thekids_palettes$primary)){
-    stop("The colour you have provided is not in the list. Please select from: Saffron, Pumpkin, Teal, DarkTeal, CelestialBlue, AzureBlue, MidnightBlue, or CoolGrey")
+  # Check zebra vs highlight
+  if (zebra && !is.null(highlight)) {
+    stop("Cannot use both zebra striping and highlight rows. Choose one.")
   }
 
-  if(zebra == TRUE & !is.null(highlight)){
-    stop("You can not opt for zebra (alternating) colour as well as highlight specific rows. Please disable one of the two options.")
+  # Check if x is already class flextable
+  if (inherits(x, "flextable")) {
+    warning("Object of class 'flextable' detected. Please note that some flextable formatting may not carry over as expected.\n\nPlease consider applying `thekids_table()` in place of `flextable()` call in your workflow.")
   }
 
-  # Determine the number of rows based on the class of x
-  n_rows <- if (inherits(x, "tbl_summary")) {
-    nrow(tidyr::as_tibble(x))
-  } else if(inherits(x, "flextable")){
-    nrow_part(x, part = "header") + nrow_part(x, part = "body") + nrow_part(x, part = "footer")
-  } else if(inherits(x, c("tbl_merge", "tbl_stack", "tbl_regression"))){
-    nrow(as_tibble(x))
+
+  # Save *existing* flextable defaults so they can be restored at the end
+  old_defaults <- flextable::get_flextable_defaults()
+
+  # Ensure these existing defaults are reset on any exit
+  #on.exit(flextable::init_flextable_defaults(), add = TRUE) ## This works! But resets to package default options on exit
+  on.exit(do.call(flextable::set_flextable_defaults, old_defaults),
+          add = TRUE)
+
+  # NOW set the flextable defaults
+  if (zebra == TRUE){
+    flextable::set_flextable_defaults(font.family = font_family,
+                                      font.size = font.size,
+                                      theme_fun = function(y) table_zebra(y, colour = colour),
+                                      line_spacing = line.spacing,
+                                      padding = padding,
+                                      big.mark = "",
+                                      table.layout = "autofit",
+                                      ...)
+  } else if (!is.null(highlight)){
+    flextable::set_flextable_defaults(font.family = font_family,
+                                      font.size = font.size,
+                                      theme_fun = function(y) table_highlight(y, colour = colour, highlight = highlight),
+                                      line_spacing = line.spacing,
+                                      padding = padding,
+                                      big.mark = "",
+                                      table.layout = "autofit",
+                                      ...)
   } else {
-    nrow(x)
+    flextable::set_flextable_defaults(font.family = font_family,
+                                      font.size = font.size,
+                                      theme_fun = function(y) table_non_zebra(y, colour = colour),
+                                      line_spacing = line.spacing,
+                                      padding = padding,
+                                      big.mark = "",
+                                      table.layout = "autofit",
+                                      ...)
   }
 
-  if(!is.null(highlight) && length(highlight) > 0){
-    if(max(highlight) > n_rows) {
-      stop("You are attempting to highlight at least one row that is not in your table (based on the number of rows in the table). Please recheck your indexing", call. = F)
-    }
-  }
+  # Coerce x to flextable
+  ## amended flextable defaults will be applied within function environment
+  table_out <- table_coerce(x)
 
-  # Setting up zebra colouring
+  table_out <- table_out %>%
+    flextable::fontsize(size = font.size.header, part = "header") %>%
+    flextable::color(color = "white", part = "header") %>%
+    flextable::color(color = "#111921", part = "body") %>%
+    flextable::hline_top(part = "all") %>%
+    flextable::hline_bottom() %>%
+    flextable::autofit()
 
-  theme_thekids_zebra <- function (x,
-                                   odd_header = thekids_palettes$primary[[paste(colour)]],
-                                   odd_body = thekids_palettes$tint50[[paste(colour)]],
-                                   even_header = "transparent",
-                                   even_body = "transparent"){
+  return(table_out)
 
-    if (!inherits(x, "flextable")) {
-      stop(sprintf("Function `%s` supports only flextable objects.",
-                   "theme_kids_zebra()"))
-    }
-    h_nrow <- nrow_part(x, "header")
-    f_nrow <- nrow_part(x, "footer")
-    b_nrow <- nrow_part(x, "body")
-    x <- border_remove(x)
-    x <- align(x = x, align = "center", part = "header")
-    if (h_nrow > 0) {
-      even <- seq_len(h_nrow)%%2 == 0
-      odd <- !even
-      x <- bg(x = x, i = odd, bg = odd_header, part = "header")
-      x <- bg(x = x, i = even, bg = even_header, part = "header")
-      x <- bold(x = x, bold = TRUE, part = "header")
-    }
-    if (f_nrow > 0) {
-      even <- seq_len(f_nrow)%%2 == 0
-      odd <- !even
-      x <- bg(x = x, i = odd, bg = odd_header, part = "footer")
-      x <- bg(x = x, i = even, bg = even_header, part = "footer")
-      x <- bold(x = x, bold = TRUE, part = "footer")
-    }
-    if (b_nrow > 0) {
-      even <- seq_len(b_nrow)%%2 == 0
-      odd <- !even
-      x <- bg(x = x, i = odd, bg = odd_body, part = "body")
-      x <- bg(x = x, i = even, bg = even_body, part = "body")
-    }
-    x <- align_text_col(x, align = "left", header = TRUE)
-    x <- align_nottext_col(x, align = "right", header = TRUE)
-    x
-  }
-
-  # Setting up highlighting colouring
-
-  theme_thekids_highlight <- function (x,
-                                       highlight_header = thekids_palettes$primary[[paste(colour)]],
-                                       highlight_body = thekids_palettes$tint50[[paste(colour)]],
-                                       other_header = "transparent",
-                                       other_body = "transparent"){
-
-    if (!inherits(x, "flextable")) {
-      stop(sprintf("Function `%s` supports only flextable objects.",
-                   "theme_kids_zebra()"))
-    }
-    h_nrow <- nrow_part(x, "header")
-    f_nrow <- nrow_part(x, "footer")
-    b_nrow <- nrow_part(x, "body")
-    x <- border_remove(x)
-    x <- align(x = x, align = "center", part = "header")
-    if (h_nrow > 0) {
-      even <- seq_len(h_nrow)%%2 == 0
-      odd <- !even
-      x <- bg(x = x, i = odd, bg = highlight_header, part = "header")
-      x <- bg(x = x, i = even, bg = other_header, part = "header")
-      x <- bold(x = x, bold = TRUE, part = "header")
-    }
-    if (f_nrow > 0) {
-      even <- seq_len(f_nrow)%%2 == 0
-      odd <- !even
-      x <- bg(x = x, i = odd, bg = highlight_header, part = "footer")
-      x <- bg(x = x, i = even, bg = other_header, part = "footer")
-      x <- bold(x = x, bold = TRUE, part = "footer")
-    }
-    if (b_nrow > 0) {
-      other <- setdiff(seq_len(b_nrow), highlight)
-      x <- bg(x = x, i = highlight, bg = highlight_body, part = "body")
-      x <- bg(x = x, i = other, bg = other_body, part = "body")
-    }
-    x <- align_text_col(x, align = "left", header = TRUE)
-    x <- align_nottext_col(x, align = "right", header = TRUE)
-    x
-  }
-
-  # Setting up non-zebra colouring
-
-  theme_thekids_non_zebra <- function (x,
-                                       odd_header = thekids_palettes$primary[[paste(colour)]],
-                                       odd_body = "transparent",
-                                       even_header = "transparent",
-                                       even_body = "transparent"){
-
-    if (!inherits(x, "flextable")) {
-      stop(sprintf("Function `%s` supports only flextable objects.",
-                   "theme_kids_zebra()"))
-    }
-    h_nrow <- nrow_part(x, "header")
-    f_nrow <- nrow_part(x, "footer")
-    b_nrow <- nrow_part(x, "body")
-    x <- border_remove(x)
-    x <- align(x = x, align = "center", part = "header")
-    if (h_nrow > 0) {
-      even <- seq_len(h_nrow)%%2 == 0
-      odd <- !even
-      x <- bg(x = x, i = odd, bg = odd_header, part = "header")
-      x <- bg(x = x, i = even, bg = even_header, part = "header")
-      x <- bold(x = x, bold = TRUE, part = "header")
-    }
-    if (f_nrow > 0) {
-      even <- seq_len(f_nrow)%%2 == 0
-      odd <- !even
-      x <- bg(x = x, i = odd, bg = odd_header, part = "footer")
-      x <- bg(x = x, i = even, bg = even_header, part = "footer")
-      x <- bold(x = x, bold = TRUE, part = "footer")
-    }
-    if (b_nrow > 0) {
-      even <- seq_len(b_nrow)%%2 == 0
-      odd <- !even
-      x <- bg(x = x, i = odd, bg = odd_body, part = "body")
-      x <- bg(x = x, i = even, bg = even_body, part = "body")
-    }
-    x <- align_text_col(x, align = "left", header = TRUE)
-    x <- align_nottext_col(x, align = "right", header = TRUE)
-    x
-  }
-
-  # Establishing the flextable defaults to be applied, based on the users choices
-
-  if(zebra == TRUE){
-    set_flextable_defaults(
-      font.family = font_family,
-      font.size = font.size,
-      theme_fun = theme_thekids_zebra,
-      line_spacing = line.spacing,
-      padding = padding,
-      big.mark = "",
-      table.layout = "autofit",
-      ...)
-  } else if(!is.null(highlight)){
-    set_flextable_defaults(
-      font.family = font_family,
-      font.size = font.size,
-      theme_fun = theme_thekids_highlight,
-      line_spacing = line.spacing,
-      padding = padding,
-      big.mark = "",
-      table.layout = "autofit",
-      ...)
-  } else {
-    set_flextable_defaults(
-      font.family = font_family,
-      font.size = font.size,
-      theme_fun = theme_thekids_non_zebra,
-      line_spacing = line.spacing,
-      padding = padding,
-      big.mark = "",
-      table.layout = "autofit",
-      ...)
-  }
-
-  # Generating the output - correcting table class
-
-  if(any(class(x) %in% c("flextable"))){
-    table_out <- x
-  } else if(any(class(x) %in% c("gtsummary"))){
-    table_out <- x %>%
-      gtsummary::as_flex_table()
-  } else if(any(class(x) %in% c("gt_tbl"))){
-    table_out <- x %>%
-      data.frame %>%
-      flextable
-  }
-  else {
-    table_out <- x %>%
-      flextable
-  }
-
-  # Generating the output - applying finishing touches
-
-  table_out %>%
-    fontsize(part = "header", size = font.size.header) %>%
-    color(color = "white", part = "header") %>%
-    color(color = "#111921", part = "body") %>%
-    hline_top(part = "all") %>%
-    hline_bottom() %>%
-    autofit()
 }
