@@ -153,8 +153,22 @@ table_coerce <- function(x) {
     table_out <- x %>%
       data.frame %>%
       flextable::flextable()
-  }
-  else {
+  } else if (any(class(x) %in% c("knitr_kable"))){
+    if (length(as.character(x)) > 1){
+      stop("Please ensure `format='html'` is specified inside `kable()` call to proceed.")
+    } else {
+      if (substr(as.character(x), start = 1, stop = 6) != "<table"){
+        stop("Please ensure `format='html'` is specified inside `kable()` call to proceed.")
+      }
+    }
+    table_out <- x %>%
+      as.character() %>%
+      rvest::read_html() %>%
+      rvest::html_node("table") %>%
+      rvest::html_table(fill = TRUE) %>%
+      tidyr::as_tibble() %>%
+      flextable::flextable()
+  } else {
     table_out <- x %>%
       flextable::flextable()
   }
