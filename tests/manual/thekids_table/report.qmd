@@ -170,6 +170,18 @@ dat %>%
   thekids_table()
 ```
 
+What about if `format="latex"` is specified?
+
+```{r}
+#| code-fold: false
+
+dat %>%
+  rownames_to_column() %>%
+  knitr::kable(format = "latex") %>%
+  thekids_table()
+```
+
+
 
 # b) Check `flextable_default` handling
 
