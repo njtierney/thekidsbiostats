@@ -1,5 +1,10 @@
 <!-- NEWS.md is maintained by https://cynkra.github.io/fledge, do not edit -->
 
+# thekidsbiostats 1.1.1
+
+- Same as previous version.
+
+
 # thekidsbiostats 1.1.0
 
 * Create documentation for thekids_colours, thekids_palettes
