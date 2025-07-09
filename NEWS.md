@@ -1,5 +1,16 @@
 <!-- NEWS.md is maintained by https://cynkra.github.io/fledge, do not edit -->
 
+# thekidsbiostats 1.2.0
+
+* Added integer values to zebra parameter in thekids_table
+* Added zebra integer highlighting
+* Build thekids_table documentation
+* Resolve merge conflicts in thekids_table documentation
+* date_fix parameter in thekids_table
+* Fix date wrapping in thekids_table, rownames in kable column name handling
+* Add thekids_table tests
+
+
 # thekidsbiostats 1.1.1
 
 - Same as previous version.
