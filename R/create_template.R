@@ -15,8 +15,8 @@ create_template <- function(file_name = NULL,
                             ext_name = "html",
                             open_file = TRUE) {
 
-  if (is.null(file_name)) stop("You must provide a file_name.")
   if (!dir.exists(directory)) stop("Directory does not exist.")
+  if (is.null(file_name)) stop("You must provide a file_name.")
 
   valid_ext <- list.files(system.file("ext_qmd/_extensions", package = "thekidsbiostats"))
   stopifnot("Extension not in package" = ext_name %in% valid_ext)
@@ -38,7 +38,7 @@ create_template <- function(file_name = NULL,
   )
   message("📄 Template extension files copied to: ", file.path(extfolder, ext_name))
 
-  qmd_file <- file.path(directory, paste0(file_name, ".qmd"))
+  qmd_file <- file.path(directory, ifelse(endsWith(file_name, ".qmd"), file_name, paste0(file_name, ".qmd")))
 
   if (file.exists(qmd_file)) {
     warning("⚠️ Report file already exists: ", qmd_file, ". Skipping creation.")
