@@ -1,5 +1,10 @@
 <!-- NEWS.md is maintained by https://cynkra.github.io/fledge, do not edit -->
 
+# thekidsbiostats 1.2.1
+
+- Same as previous version.
+
+
 # thekidsbiostats 1.2.0
 
 * Added integer values to zebra parameter in thekids_table
