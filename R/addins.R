@@ -239,7 +239,7 @@ create_project_addin <- function() {
 
       }, error = function(e) {
         shiny::showModal(shiny::modalDialog("Error", e$message, easyClose = TRUE))
-        print("Fail")
+        output$status <- shiny::renderText("🛑 Project creation failed!")
       })
 
 
@@ -284,13 +284,13 @@ create_project_addin <- function() {
       if (file.exists(rproj_file) && rstudioapi::isAvailable()) {
         rstudioapi::openProject(path = rproj_file, newSession = TRUE)
       } else {
-        output$status <- renderText("⚠️ Could not open project (file missing or RStudio API unavailable).")
+        output$status <- shiny::renderText("⚠️ Could not open project (file missing or RStudio API unavailable).")
       }
 
       shiny::stopApp()
     })
 
-    observeEvent(input$cancel_open, {
+    shiny::observeEvent(input$cancel_open, {
       shiny::removeModal()
       shiny::stopApp()
     })
@@ -308,55 +308,287 @@ create_project_addin <- function() {
 #' @export
 create_template_addin <- function() {
 
+  default_title <- "The Kids Biostats Template"
+  default_subtitle <- "A biostatistics report template"
+  default_affiliation <- "The Kids Research Institute Australia, Perth, WA, Australia"
+  default_name <- Sys.info()[["user"]]
+  default_reproducibility <- TRUE
+
+  # Check pattern: first two uppercase, third lowercase
+  if (grepl("^[A-Z]{2}[a-z]", default_name)) {
+    # Insert space between first and second characters
+    default_name <- paste0(substr(default_name, 1, 1), " ", substr(default_name, 2, nchar(default_name)))
+  }
+
+
   ui <- shiny::fluidPage(
+    shinyjs::useShinyjs(),  # Initialise shinyjs
+
     shiny::titlePanel("Create Report Template"),
 
     shiny::sidebarLayout(
-      shiny::sidebarPanel(width=8,
-        shiny::textInput("file_name", "Report File Name:", value = "report", width = "50%"),
-        shiny::selectInput("ext_name", "Report Type:",
-          choices = list.files(system.file("ext_qmd/_extensions", package = "thekidsbiostats")),
-          selected = "html", width = "50%"),
-        shiny::actionButton("browse", "Browse Output Folder"),
+      shiny::sidebarPanel(width=3,
+        shiny::fluidRow(
+          shiny::column(8, style = "padding-right:5px;",
+                 shiny::textInput("file_name", "Report File Name:", value = "report")),
+          shiny::column(4, style = "padding-left:5px; padding-right:5px;",
+                 shiny::selectInput("ext_name", "Format:",
+                                        choices = list.files(system.file("ext_qmd/_extensions", package = "thekidsbiostats")),
+                                        selected = "html", width='80%'))
+        ),
+        shiny::actionButton("browse", "Select Folder"),
         shiny::textOutput("selected_dir"),
         shiny::br(),
-        shiny::actionButton("create", "Create Template", class = "btn-primary")
+        shiny::actionLink("toggle_advanced", "▶ More options"),
+
+        # Advanced options (initially hidden)
+        shiny::div(
+          id = "advanced_ui",
+          style = "display: none;",
+          shiny::tags$hr(),
+          shiny::textInput("title", "Title", value = default_title),
+          shiny::textInput("subtitle", "Subtitle", value = default_subtitle),
+          shiny::textInput("author", "Author Name", value = default_name),
+          shiny::textInput("affiliation", "Affiliation", value = default_affiliation),
+          shiny::checkboxInput("reproducibility", "Include Reproducibility", value = default_reproducibility)
+        ),
+        shiny::br(), shiny::br(),
+        shiny::tags$div(
+          id = 'create_wrap',
+          title = "Please select a folder.",
+          style = "display: inline-block;",
+          shiny::actionButton("create", "Create Template", class = "btn-primary", disabled = "disabled")
+        )
       ),
-      shiny::mainPanel(width=4,
-        shiny::verbatimTextOutput("status")
+      shiny::mainPanel(width=9,
+                       shiny::uiOutput("preview_html")
       )
-    )
+    ),
+    shiny::br(),
+    shiny::verbatimTextOutput("status")
   )
 
   server <- function(input, output, session) {
     output_path <- shiny::reactiveVal(NULL)
+    show_advanced <- shiny::reactiveVal(FALSE)
+    preview_inputs <- shiny::reactiveVal(NULL)
+    last_preview <- shiny::reactiveVal(NULL)
+    suppress_preview <- shiny::reactiveVal(FALSE)
+
+    debounced_title <- shiny::debounce(shiny::reactive(input$title), 1200)
+    debounced_subtitle <- shiny::debounce(shiny::reactive(input$subtitle), 1200)
+    debounced_author <- shiny::debounce(shiny::reactive(input$author), 750)
+    debounced_affiliation <- shiny::debounce(shiny::reactive(input$affiliation), 1000)
+    debounced_reproducibility <- shiny::debounce(shiny::reactive(input$reproducibility), 0)
+
+    debounced_inputs <- shiny::reactive({
+      list(
+        title = debounced_title() %||% default_title,
+        subtitle = debounced_subtitle() %||% default_subtitle,
+        author = debounced_author() %||% default_name,
+        affiliation = debounced_affiliation() %||% default_affiliation,
+        include_reproducibility = debounced_reproducibility() %||% default_reproducibility
+      )
+    })
+
+    shiny::observe({
+      preview_inputs(list(
+        title = default_title,
+        subtitle = default_subtitle,
+        author = default_name,
+        affiliation = default_affiliation,
+        include_reproducibility = default_reproducibility
+      ))
+    })
+
+
+    generate_preview <- function(title, subtitle, author, affiliation, include_reproducibility) {
+      template_path <- system.file("example_reports", "example.html", package = "thekidsbiostats")
+
+      html_lines <- update_html_template(
+        readLines(template_path, warn = FALSE),
+        title = title,
+        subtitle = subtitle,
+        author = author,
+        affiliation = affiliation,
+        include_reproducibility = include_reproducibility
+      )
+      render_preview(html_lines)
+    }
+
+    shiny::observe({
+      if (isTRUE(suppress_preview())) return()  # Don't update if suppressed
+
+      new_inputs <- debounced_inputs()
+      old_inputs <- last_preview()
+
+      if (is.null(old_inputs) || !identical(new_inputs, old_inputs)) {
+        preview_inputs(new_inputs)
+        last_preview(new_inputs)
+      }
+    })
+
+
+    output$preview_html <- shiny::renderUI({
+      shiny::req(preview_inputs())
+      path <- generate_preview(
+        title = debounced_inputs()$title,
+        subtitle = debounced_inputs()$subtitle,
+        author = debounced_inputs()$author,
+        affiliation = debounced_inputs()$affiliation,
+        include_reproducibility = debounced_inputs()$include_reproducibility
+      )
+
+      shiny::addResourcePath("preview", dirname(path))
+
+      shiny::tags$div(
+        style = "height: calc(100vh - 140px); overflow-y: hidden; border: 1px solid #ddd; padding: 0;",
+        shiny::tags$iframe(
+          src = paste0("preview/", basename(path)),
+          style = "width: 100%; height: 100%; border: none; pointer-events: none;"
+        )
+      )
+
+    })
+
+    default_name <- Sys.info()[["user"]]
+    if (grepl("^[A-Z]{2}[a-z]", default_name)) {
+      default_name <- paste0(substr(default_name, 1, 1), " ", substr(default_name, 2, nchar(default_name)))
+    } else {
+      default_name <- gsub("(?<=[a-z])(?=[A-Z])", " ", default_name, perl = TRUE)
+    }
+
+    # Map the resource path for your example_reports folder inside the package
+    shiny::addResourcePath(
+      prefix = "example_reports",
+      directoryPath = system.file("example_reports", package = "thekidsbiostats")
+    )
+
+    # Disable the Create Template button initially
+    shinyjs::disable("create")
 
     shiny::observeEvent(input$browse, {
       selected <- rstudioapi::selectDirectory("Choose target directory")
       if (!is.null(selected)) output_path(selected)
+
+      if (!nzchar(input$file_name)) {
+        shinyjs::disable("create")
+        shinyjs::runjs('document.getElementById("create_wrap").setAttribute("title", "Please enter a valid file name");')
+      } else if (is.null(output_path())) {
+        shinyjs::disable("create")
+        shinyjs::runjs('document.getElementById("create_wrap").setAttribute("title", "Please select a folder");')
+      } else {  # Enable the button
+        shinyjs::enable("create")
+        shinyjs::runjs('document.getElementById("create_wrap").setAttribute("title", "Create template.");')
+      }
+
     })
 
     output$selected_dir <- shiny::renderText({
       req(output_path())
-      paste("Selected Directory:", output_path())
+      output_path()
+    })
+
+
+    shiny::observeEvent(input$toggle_advanced, {
+      suppress_preview(TRUE)  # Suppress auto preview update
+
+      show_advanced(!show_advanced())
+
+      # Toggle visibility
+      if (show_advanced()) {
+        shiny::updateActionLink(session, "toggle_advanced", label = "▼ More options")
+        shinyjs::show("advanced_ui")
+      } else {
+        shiny::updateActionLink(session, "toggle_advanced", label = "▶ More options")
+        shinyjs::hide("advanced_ui")
+      }
+
+      # Reset suppression AFTER a short delay (after UI settles)
+      later::later(function() suppress_preview(FALSE), delay = 0.1)
     })
 
     shiny::observeEvent(input$create, {
       req(input$file_name, output_path())
 
-      tryCatch({
-        create_template(
-          file_name = input$file_name,
-          directory = output_path(),
-          ext_name = input$ext_name,
-          open_file = TRUE
-        )
-        output$status <- shiny::renderText("\u2705 Report template created successfully.")
-      }, error = function(e) {
-        shiny::showModal(shiny::modalDialog("Error", e$message, easyClose = TRUE))
-      })
+      file_name <- ifelse(endsWith(input$file_name, ".qmd"), sub("\\.qmd$", "", input$file_name), input$file_name)
+      qmd_file <- file.path(output_path(), paste0(file_name, '.qmd'))
+
+      if (file.exists(qmd_file)) {
+        output$status <- shiny::renderText(paste0("⚠️ Report file '", qmd_file, "' already exists. Skipping creation."))
+      } else {
+        tryCatch({
+          create_template(
+            file_name = file_name,
+            directory = output_path(),
+            ext_name = input$ext_name,
+            title = input$title,
+            subtitle = input$subtitle,
+            author = input$author,
+            affiliation = input$affiliation,
+            include_reproducibility = input$reproducibility,
+            open_file = FALSE
+          )
+          output$status <- shiny::renderText(paste0("\u2705 '", file_name, ".qmd' template created successfully."))
+
+          shiny::showModal(shiny::modalDialog(
+            title = shiny::tags$div(
+              style = "display: flex; align-items: center; gap: 10px;",
+              shiny::icon("check-circle", class = "text-success"),
+              shiny::tags$span("Template Successfully Created")
+            ),
+            shiny::HTML(paste0(
+              "<p style='margin-top: 10px; font-size: 1.1em;'>",
+              "The file <span style='font-family: monospace; background-color: #f8f9fa; padding: 2px 6px; border-radius: 4px;'>",
+              file_name,
+              ".qmd</span> was created successfully.",
+              "<br><br>",
+              "</p><p>Would you like to open it now?</p>"
+            )),
+            easyClose = FALSE,
+            footer = shiny::tagList(
+              shiny::tags$div(
+                style = "display: flex; justify-content: space-between; width: 100%;",
+                shiny::tags$div(
+                  shiny::actionButton("cancel_open", "Close", class = "btn btn-secondary"),
+                  shiny::actionButton("confirm_open", "Open Template", class = "btn btn-primary")
+                ),
+                shiny::tags$div(
+                  shiny::actionButton("exit", "Exit App", class = "btn btn-danger")
+                )
+              )
+            )
+          ))
+        }, error = function(e) {
+          shiny::showModal(shiny::modalDialog("Error", e$message, easyClose = TRUE))
+        })
+      }
+
+    })
+
+    shiny::observeEvent(input$confirm_open, {
+      shiny::removeModal()
+
+      file_name <- ifelse(endsWith(input$file_name, ".qmd"), sub("\\.qmd$", "", input$file_name), input$file_name)
+      qmd_file <- file.path(output_path(), paste0(file_name, '.qmd'))
+
+      if (file.exists(qmd_file) && rstudioapi::isAvailable()) {
+        output$status <- shiny::renderText("📂 Opening template file.")
+        rstudioapi::navigateToFile(qmd_file)
+      }
+
       shiny::stopApp()
     })
+
+    shiny::observeEvent(input$cancel_open, {
+      shiny::removeModal()
+    })
+
+    shiny::observeEvent(input$exit, {
+      shiny::removeModal()
+      shiny::stopApp()
+    })
+
   }
 
   shiny::shinyApp(ui, server)
