@@ -250,7 +250,7 @@ date_format <- function(x, date_fix, rep_char = "\u2011"){
 #' @noRd
 get_num_body_rows <- function(x) {
   # first, coerce table to standard flextable
-  x <- table_coerce(x)
+  x <- table_coerce(x, date_fix=FALSE)
   return(nrow(x$body$dataset))
 }
 
