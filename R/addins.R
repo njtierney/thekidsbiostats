@@ -162,7 +162,7 @@ create_project_addin <- function() {
                                     selected = c("data-raw", "data", "admin", "docs", "reports")
           ),
           shiny::tags$head(
-            shiny::tags$style(HTML("
+            shiny::tags$style(shiny::HTML("
               .disabled-label {
                 color: #A99 !important;
                 pointer-events: none;
@@ -170,7 +170,7 @@ create_project_addin <- function() {
             "))
           ),
 
-          shiny::tags$script(HTML("// Disable the 'reports' checkbox if 'create_report' selected
+          shiny::tags$script(shiny::HTML("// Disable the 'reports' checkbox if 'create_report' selected
             Shiny.addCustomMessageHandler('lock_reports', function(message) {
               const checkboxes = document.getElementsByName('folders[]');
               for (const box of checkboxes) {
@@ -191,7 +191,7 @@ create_project_addin <- function() {
             });"
           )),
 
-          shiny::tags$style(HTML("
+          shiny::tags$style(shiny::HTML("
             .well {
               overflow-x: auto; /* or try hidden if you want to clip instead */
             }"
@@ -201,7 +201,7 @@ create_project_addin <- function() {
               width = 8,
               shiny::textInput(
                 "custom_folders",
-                label = tags$label("Additional Custom Folders", style = "white-space: nowrap;"),
+                label = shiny::tags$label("Additional Custom Folders", style = "white-space: nowrap;"),
                 placeholder = "comma-separated folders"
               )
             ),
@@ -214,7 +214,7 @@ create_project_addin <- function() {
           shiny::checkboxInput("create_report", "Create report template?", value = FALSE)
 
         ),
-        div(id = 'report_side',
+        shiny::div(id = 'report_side',
           shiny::h3("Report Customisation"),
           shiny::p("Initialise a template report and modify the details contained within the document."),
           shiny::fluidRow(
@@ -611,7 +611,7 @@ create_template_addin <- function() {
 
   ui <- shiny::fluidPage(
     shiny::tags$head(
-      shiny::tags$style(HTML("
+      shiny::tags$style(shiny::HTML("
       .container-fluid {
         max-width: 3000px;
         margin-left: auto;
