@@ -251,8 +251,8 @@ create_project_addin <- function() {
         )
       ),
       shiny::mainPanel(width = 9,
-        div(id = "project_main",
-          div(style = "max-width: 65%",
+        shiny::div(id = "project_main",
+          shiny::div(style = "max-width: 65%",
             shiny::wellPanel(style='background-color: #f6f6f6; border: none; box-shadow: none;',
               shiny::tags$h4("Project Directory Structure"),
               shiny::textOutput("selected_dir"),
@@ -261,7 +261,7 @@ create_project_addin <- function() {
           ),
           shiny::verbatimTextOutput("status")
         ),
-        div(id = "report_main",
+        shiny::div(id = "report_main",
           shiny::wellPanel(style='background-color: #f6f6f6;',
             shiny::tags$h4("Template Report Preview"),
             shiny::uiOutput("preview_html")
@@ -301,13 +301,13 @@ create_project_addin <- function() {
     options(all_folders = c("data-raw", "data", "admin", "docs", "reports"))
 
     # Initialise visibility
-    observe({
+    shiny::observe({
       shinyjs::hide("report_side")
       shinyjs::hide("report_main")
     })
 
     # Toggle visibility based on selected tab
-    observeEvent(input$main_tabs, {
+    shiny::observeEvent(input$main_tabs, {
       if (input$main_tabs == "Project") {
         shinyjs::show("project_side")
         shinyjs::show("project_main")
@@ -322,18 +322,18 @@ create_project_addin <- function() {
     })
 
 
-    observeEvent(input$main_tabs, {
+    shiny::observeEvent(input$main_tabs, {
       current_tab(input$main_tabs)
     })
 
 
     #### Project Tab
 
-    observeEvent(input$create_report, {
+    shiny::observeEvent(input$create_report, {
       if (isTRUE(input$create_report)) {
         # Ensure 'reports' is included in selection
         new_selection <- union(input$folders, "reports")
-        updateCheckboxGroupInput(session, "folders", selected = new_selection)
+        shiny::updateCheckboxGroupInput(session, "folders", selected = new_selection)
 
         # Lock and de-highlight
         session$sendCustomMessage("lock_reports", list(lock = TRUE))
@@ -344,10 +344,10 @@ create_project_addin <- function() {
     })
 
     # Prevent manual unchecking of "reports"
-    observe({
+    shiny::observe({
       if (isTRUE(input$create_report)) {
         if (is.null(input$folders) || !"reports" %in% input$folders) {
-          updateCheckboxGroupInput(session, "folders",
+          shiny::updateCheckboxGroupInput(session, "folders",
                                    selected = union(input$folders, "reports"))
         }
       }
@@ -370,7 +370,7 @@ create_project_addin <- function() {
     })
 
     output$selected_dir <- shiny::renderText({
-      req(project_path())
+      shiny::req(project_path())
       paste(" ", project_path())
     })
 
@@ -378,8 +378,8 @@ create_project_addin <- function() {
       new_folder <- trimws(input$custom_folders)
 
       if (nzchar(new_folder)) {
-        current_choices <- isolate(input$folders)
-        all_choices <- isolate(getOption("all_folders", c("data-raw", "data", "admin", "docs", "reports")))
+        current_choices <- shiny::isolate(input$folders)
+        all_choices <- shiny::isolate(getOption("all_folders", c("data-raw", "data", "admin", "docs", "reports")))
 
         if (!(new_folder %in% all_choices)) {
           updated_choices <- c(all_choices, new_folder)
@@ -482,7 +482,7 @@ create_project_addin <- function() {
     # )
 
     output$selected_report_dir <- shiny::renderText({
-      req(project_path())
+      shiny::req(project_path())
       paste0("  ", project_path(), '/reports')
     })
 
@@ -490,7 +490,7 @@ create_project_addin <- function() {
     #### Create Project
 
     shiny::observeEvent(input$create, {
-      req(project_path(), input$project_name, input$report_filename)
+      shiny::req(project_path(), input$project_name, input$report_filename)
 
       report_filename <- ifelse(endsWith(input$report_filename, ".qmd"), sub("\\.qmd$", "", input$report_filename), input$report_filename)
       qmd_path <- file.path(project_path(), 'reports', paste0(report_filename, '.qmd'))
