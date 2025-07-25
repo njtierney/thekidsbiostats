@@ -143,8 +143,7 @@ create_project_addin <- function() {
     shiny::tabsetPanel(
       id="main_tabs",
       selected = "Project",
-      shiny::tabPanel("Project"),
-      shiny::tabPanel("Report")
+      shiny::tabPanel("Project")
     ),
 
 
@@ -304,6 +303,25 @@ create_project_addin <- function() {
     shiny::observe({
       shinyjs::hide("report_side")
       shinyjs::hide("report_main")
+    })
+
+    # Condition the Report tab on checkbox
+    shiny::observeEvent(input$create_report, {
+      if (isTRUE(input$create_report)) {
+        shiny::insertTab(
+          inputId = "main_tabs",
+          tabPanel("Report"),
+          target = "Project",
+          position = "after",
+          select = FALSE
+        )
+      } else {
+        # Redirect to "Project" tab before removing to avoid errors
+        if (input$main_tabs == "Report") {
+          shiny::updateTabsetPanel(session, "main_tabs", selected = "Project")
+        }
+        shiny::removeTab("main_tabs", target = "Report")
+      }
     })
 
     # Toggle visibility based on selected tab
