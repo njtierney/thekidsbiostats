@@ -48,7 +48,7 @@ create_template <- function(file_name = NULL,
 
   qmd_lines <- readLines(file.path(system.file(file.path("ext_qmd/_extensions", ext_name), package = "thekidsbiostats"), 'template.qmd'))
   qmd_lines <- update_qmd_template(
-    line = qmd_lines,
+    lines = qmd_lines,
     title = title,
     subtitle = subtitle,
     author = author,
