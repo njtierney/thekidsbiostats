@@ -154,6 +154,7 @@ create_project_addin <- function() {
           shiny::p("Modify the details of your project and select the folder structure and files that best suits your project."),
           shiny::textInput("project_name", "Project Name:", value="", width='90%'),
           shiny::actionButton("browse", "Select Destination Folder", class = 'btn-secondary'),
+          shiny::checkboxInput("create_report", "Create report template?", value = FALSE),
           shiny::textOutput("selected_dir"),
           shiny::br(),
           shiny::checkboxGroupInput("folders", "Folders to Include:",
@@ -209,8 +210,7 @@ create_project_addin <- function() {
               style = "margin-top: 30px;",
               shiny::actionButton("add_custom_folder", "Add", class = 'btn-secondary')
             )
-          ),
-          shiny::checkboxInput("create_report", "Create report template?", value = FALSE)
+          )
 
         ),
         shiny::div(id = 'report_side',
