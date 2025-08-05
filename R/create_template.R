@@ -39,6 +39,15 @@ create_template <- function(file_name = NULL,
 
   message("📁 _extensions folder created: ", extfolder)
 
+  file.copy(
+    from = system.file(file.path("ext_qmd/_extensions", ext_name), package = "thekidsbiostats"),
+    to = extfolder,
+    overwrite = TRUE,
+    recursive = TRUE,
+    copy.mode = TRUE
+  )
+  message("📄 Template extension files copied to: ", file.path(extfolder, ext_name))
+
   qmd_file <- file.path(directory, ifelse(endsWith(file_name, ".qmd"), file_name, paste0(file_name, ".qmd")))
 
   if (file.exists(qmd_file)) {
