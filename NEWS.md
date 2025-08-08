@@ -1,5 +1,11 @@
 <!-- NEWS.md is maintained by https://cynkra.github.io/fledge, do not edit -->
 
+# thekidsbiostats 1.3.0
+
+* Quality-of-life updates to create_template_addin()
+* Added extra functionality to create_template_addin()
+
+
 # thekidsbiostats 1.2.1
 
 - Same as previous version.
