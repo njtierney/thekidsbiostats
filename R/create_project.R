@@ -54,7 +54,6 @@ create_project <- function(project_name,
       message("📂 Report folder created: reports/")
     }
     qmd_file <- create_template(
-      file_name = "report",
       directory = report_dir,
       ext_name = ext_name,
       open_file = FALSE,
