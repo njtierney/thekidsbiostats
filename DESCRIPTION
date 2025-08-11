@@ -38,6 +38,7 @@ Imports:
     patchwork (>= 1.3),
     purrr (>= 0.3.4),
     quantreg,
+    rlang,
     rstudioapi (>= 0.17),
     shiny (>= 1.10),
     shinyjs (>= 2.1.0),

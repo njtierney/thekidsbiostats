@@ -15,6 +15,7 @@
 #' is determined by the specific method implementation for the model type.
 #'
 #' @import patchwork
+#' @importFrom rlang .data
 #'
 #' @examples
 #' # Assuming `mod` is a fitted model object
@@ -70,8 +71,8 @@ thekids_model_output.lm <- function(mod, by, data = NULL, ...) {
 
     mod_desc_plot <- mod_dat %>%
       dplyr::mutate(x = factor(.[[by]])) %>%
-      ggplot2::ggplot(ggplot2::aes(x = x, y = .data[[y]],
-                 colour = x, group = x, fill = x)) +
+      ggplot2::ggplot(ggplot2::aes(x = .data$x, y = .data[[y]],
+                 colour = .data$x, group = .data$x, fill = .data$x)) +
       ggplot2::geom_violin(alpha = 0.1, width = 0.5) +
       ggplot2::geom_jitter(height = 0, width = 0.05, alpha = 0.3) +
       ggplot2::stat_summary(fun.data = mean_se, geom = "errorbar", width = 0.05, colour = "red") +
@@ -92,10 +93,10 @@ thekids_model_output.lm <- function(mod, by, data = NULL, ...) {
       suppressMessages() %>% suppressWarnings()
 
     mod_desc_plot <- mod_dat %>%
-      dplyr::mutate(x = .[[by]]) %>%
-      ggplot2::ggplot(aes(x = x, y = .data[[y]])) +
-      ggplot2::geom_jitter(width = 0.05, height = 0.05, alpha = 0.5, size = 3,col = thekids_colours[[3]]) +
-      ggplot2::geom_smooth(fill = thekids_colours[[1]], col = thekids_colours[[1]],
+      dplyr::mutate(x = .data[[by]]) %>%
+      ggplot2::ggplot(aes(x = .data$x, y = .data[[y]])) +
+      ggplot2::geom_jitter(width = 0.05, height = 0.05, alpha = 0.5, size = 3,col = thekidsbiostats::thekids_colours[[3]]) +
+      ggplot2::geom_smooth(fill = thekidsbiostats::thekids_colours[[1]], col = thekidsbiostats::thekids_colours[[1]],
                   method = "lm") +
       thekids_theme() +
       ggplot2::theme(plot.caption = ggplot2::element_text(size = 12, face = "italic"),
@@ -107,7 +108,7 @@ thekids_model_output.lm <- function(mod, by, data = NULL, ...) {
 
   mod_diag <- ggfortify:::autoplot.lm(mod)
 
-  mod_diag <- purrr::map(mod_diag, ~. + thekids_theme())
+  mod_diag <- purrr::map(mod_diag, function(p) p + thekids_theme())
 
   mod_diag <- patchwork::wrap_plots((mod_diag[[1]] + mod_diag[[2]]) / (mod_diag[[3]] + mod_diag[[4]]),
                                     ncol = 1)
@@ -118,7 +119,7 @@ thekids_model_output.lm <- function(mod, by, data = NULL, ...) {
                    pvalue_fun = function(x) gtsummary::style_number(x, digits = 3)) %>%
     gtsummary::modify_column_merge(
       pattern = "{estimate} ({conf.low}, {conf.high})",
-      rows = !is.na(estimate)
+      rows = !is.na(.data$estimate)
     )
 
 
