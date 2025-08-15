@@ -85,7 +85,7 @@ thekids_model_output.lm <- function(model, by, data = NULL, ...) {
             legend.position = "none") +
       ggplot2::labs(title = "Jittered dot and violin distribution plot",
            subtitle = paste0(y, " plotted by ", by),
-           caption = "Black 'X' on red circle indicates mean (±SE)",
+           caption = "Black 'X' on red circle indicates mean (\u00B1SE)",
            x = by)
   } else {
     mod_desc <- mod_dat %>%
